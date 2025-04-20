@@ -1,0 +1,77 @@
+<view class="user-detail-page">
+  <!-- 照片轮播 -->
+  <swiper class="photos-swiper" indicator-dots="{{true}}" 
+          indicator-color="rgba(255, 255, 255, 0.3)"
+          indicator-active-color="#ffffff"
+          autoplay="{{false}}" circular="{{true}}">
+    <swiper-item wx:for="{{userInfo.photos}}" wx:key="index">
+      <image src="{{item}}" mode="aspectFill" class="photo-item"></image>
+    </swiper-item>
+  </swiper>
+  
+  <!-- 用户信息卡片 -->
+  <view class="info-card card">
+    <view class="basic-info">
+      <view class="name-age">
+        <text class="nickname">{{userInfo.nickName}}</text>
+        <text class="age-gender">{{ageGenderText}}</text>
+      </view>
+      
+      <view class="online-status" wx:if="{{userInfo.isOnline}}">
+        <view class="dot"></view>
+        <text>在线</text>
+      </view>
+    </view>
+    
+    <view class="profile-info" wx:if="{{userInfo.occupation || userInfo.school}}">
+      <text>{{profileText}}</text>
+    </view>
+    
+    <view class="location" wx:if="{{userInfo.location}}">
+      <image class="icon" src="/assets/icons/location.png" mode="aspectFit"></image>
+      <text>{{distanceText}}</text>
+    </view>
+    
+    <view class="signature" wx:if="{{userInfo.signature}}">
+      "{{userInfo.signature}}"
+    </view>
+    
+    <!-- 标签列表 -->
+    <view class="tags-list">
+      <view class="tag" wx:for="{{userInfo.tags}}" wx:key="index">{{item}}</view>
+    </view>
+    
+    <!-- 操作按钮 -->
+    <view class="action-buttons">
+      <view class="action-btn skip-btn" bindtap="handleSkip">
+        <image src="/assets/icons/skip.png" mode="aspectFit"></image>
+        <text>跳过</text>
+      </view>
+      <view class="action-btn like-btn" bindtap="handleLike">
+        <image src="/assets/icons/like.png" mode="aspectFit"></image>
+        <text>喜欢</text>
+      </view>
+      <view class="action-btn chat-btn" bindtap="handleChat">
+        <image src="/assets/icons/chat.png" mode="aspectFit"></image>
+        <text>聊天</text>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 更多信息卡片 -->
+  <view class="more-info card">
+    <view class="section-title">关于我</view>
+    <view class="info-item" wx:if="{{userInfo.occupation}}">
+      <text class="label">职业</text>
+      <text class="value">{{userInfo.occupation}}</text>
+    </view>
+    <view class="info-item" wx:if="{{userInfo.school}}">
+      <text class="label">学校</text>
+      <text class="value">{{userInfo.school}}</text>
+    </view>
+    <view class="info-item" wx:if="{{userInfo.location}}">
+      <text class="label">所在地</text>
+      <text class="value">{{userInfo.location}}</text>
+    </view>
+  </view>
+</view> 

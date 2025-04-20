@@ -1,0 +1,69 @@
+<view class="profile-page">
+  <!-- 未登录状态 -->
+  <view class="not-login" wx:if="{{!isLogin}}">
+    <view class="banner gradient-bg">
+      <image class="logo" src="/assets/images/logo.png" mode="aspectFit"></image>
+      <text class="title">嘟嘟</text>
+      <text class="subtitle">遇见未知的自己</text>
+      <button class="login-btn" bindtap="handleLogin">立即登录</button>
+    </view>
+  </view>
+  
+  <!-- 已登录状态 -->
+  <view class="logged-in" wx:if="{{isLogin && userInfo}}">
+    <!-- 个人信息卡片 -->
+    <view class="user-card card">
+      <view class="card-bg gradient-bg"></view>
+      
+      <view class="user-info">
+        <image class="avatar" src="{{userInfo.avatarUrl}}" mode="aspectFill"></image>
+        <view class="user-detail">
+          <text class="nickname">{{userInfo.nickName}}</text>
+          <view class="tag" wx:if="{{userInfo.gender}}">
+            {{userInfo.gender === 1 ? '男' : '女'}}
+          </view>
+        </view>
+        <view class="signature text-gray" wx:if="{{userInfo.signature}}">
+          {{userInfo.signature}}
+        </view>
+        
+        <button class="edit-btn" bindtap="goToEditProfile">编辑资料</button>
+      </view>
+    </view>
+    
+    <!-- 数据统计 -->
+    <view class="stats-card card">
+      <view class="stats-item" bindtap="goToLikeMe">
+        <text class="stats-count">{{stats.likeMe}}</text>
+        <text class="stats-label">喜欢我的</text>
+      </view>
+      <view class="stats-item" bindtap="goToLiked">
+        <text class="stats-count">{{stats.liked}}</text>
+        <text class="stats-label">我喜欢的</text>
+      </view>
+      <view class="stats-item" bindtap="goToVisitors">
+        <text class="stats-count">{{stats.visitors}}</text>
+        <text class="stats-label">访客</text>
+      </view>
+    </view>
+    
+    <!-- 功能列表 -->
+    <view class="menu-list card">
+      <view class="menu-item" bindtap="goToSettings">
+        <image class="menu-icon" src="/assets/icons/settings.png" mode="aspectFit"></image>
+        <text class="menu-text">设置</text>
+        <image class="arrow-icon" src="/assets/icons/arrow.png" mode="aspectFit"></image>
+      </view>
+      <view class="menu-item" bindtap="goToAbout">
+        <image class="menu-icon" src="/assets/icons/about.png" mode="aspectFit"></image>
+        <text class="menu-text">关于我们</text>
+        <image class="arrow-icon" src="/assets/icons/arrow.png" mode="aspectFit"></image>
+      </view>
+    </view>
+    
+    <!-- 退出登录 -->
+    <view class="logout-btn" bindtap="handleLogout">
+      <text>退出登录</text>
+    </view>
+  </view>
+</view> 

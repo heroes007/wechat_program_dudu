@@ -1,0 +1,79 @@
+<view class="edit-profile-page">
+  <form bindsubmit="handleSubmit">
+    <!-- 头像 -->
+    <view class="avatar-section">
+      <image class="avatar" src="{{userInfo.avatarUrl}}" mode="aspectFill"></image>
+      <view class="change-avatar" bindtap="chooseAvatar">
+        <text>更换头像</text>
+      </view>
+    </view>
+    
+    <!-- 基本信息 -->
+    <view class="form-section card">
+      <view class="section-title">基本信息</view>
+      
+      <view class="form-item">
+        <view class="label">昵称</view>
+        <input class="input" name="nickName" value="{{userInfo.nickName}}" placeholder="请输入昵称"/>
+      </view>
+      
+      <view class="form-item">
+        <view class="label">性别</view>
+        <picker class="picker" name="gender" value="{{userInfo.gender}}" range="{{genderOptions}}" range-key="label" bindchange="handleGenderChange">
+          <view class="picker-text">{{genderOptions[genderIndex].label}}</view>
+        </picker>
+      </view>
+      
+      <view class="form-item">
+        <view class="label">年龄</view>
+        <picker class="picker" name="age" value="{{userInfo.age}}" range="{{ageArray}}" bindchange="handleAgeChange">
+          <view class="picker-text">{{ageArray[ageIndex]}}岁</view>
+        </picker>
+      </view>
+    </view>
+    
+    <!-- 详细资料 -->
+    <view class="form-section card">
+      <view class="section-title">详细资料</view>
+      
+      <view class="form-item">
+        <view class="label">职业</view>
+        <input class="input" name="occupation" value="{{userInfo.occupation}}" placeholder="请输入职业"/>
+      </view>
+      
+      <view class="form-item">
+        <view class="label">学校</view>
+        <input class="input" name="school" value="{{userInfo.school}}" placeholder="请输入学校"/>
+      </view>
+      
+      <view class="form-item">
+        <view class="label">所在地</view>
+        <input class="input" name="location" value="{{userInfo.location}}" placeholder="请输入所在地"/>
+      </view>
+      
+      <view class="form-item">
+        <view class="label">个性签名</view>
+        <textarea class="textarea" name="signature" value="{{userInfo.signature}}" placeholder="介绍一下自己吧~" maxlength="100"/>
+        <view class="word-count">{{signatureCount}}/100</view>
+      </view>
+    </view>
+    
+    <!-- 兴趣标签 -->
+    <view class="form-section card">
+      <view class="section-title">兴趣标签 <text class="subtitle">(最多选择5个)</text></view>
+      
+      <view class="tags-container">
+        <view class="tag {{selectedTags.indexOf(item) !== -1 ? 'selected' : ''}}" 
+              wx:for="{{allTags}}" 
+              wx:key="index"
+              bindtap="toggleTag" 
+              data-tag="{{item}}">
+          {{item}}
+        </view>
+      </view>
+    </view>
+    
+    <!-- 提交按钮 -->
+    <button class="submit-btn" form-type="submit">保存</button>
+  </form>
+</view> 

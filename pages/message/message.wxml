@@ -1,0 +1,42 @@
+<view class="container message-page">
+  <view class="message-header">
+    <text class="title">消息</text>
+    <view class="total-unread" wx:if="{{totalUnread > 0}}">{{totalUnread}}</view>
+  </view>
+  
+  <view class="message-list">
+    <view wx:if="{{messageList.length === 0}}" class="no-message">
+      <text>暂无消息</text>
+    </view>
+    
+    <view wx:for="{{messageList}}" wx:key="conversationID" 
+          class="message-item {{item.isPinned ? 'pinned' : ''}}"
+          bindtap="goToChat" 
+          data-id="{{item.conversationID}}"
+          bindlongpress="handleLongPress">
+      
+      <!-- 用户头像和未读数 -->
+      <view class="avatar-container">
+        <image class="avatar" src="{{item.avatarUrl}}" mode="aspectFill"></image>
+        <view class="badge" wx:if="{{item.unreadCount > 0}}">{{item.unreadCount}}</view>
+      </view>
+      
+      <!-- 消息内容 -->
+      <view class="message-content">
+        <view class="message-top flex-row">
+          <text class="nickname">{{item.nickName}}</text>
+          <text class="time">{{formatTime(item.lastTime)}}</text>
+        </view>
+        <view class="message-bottom">
+          <text class="last-message">{{item.lastMessage}}</text>
+        </view>
+      </view>
+      
+      <!-- 置顶图标 -->
+      <view class="pin-icon" wx:if="{{item.isPinned}}">
+        <image src="/assets/icons/pin.png" mode="aspectFit"></image>
+      </view>
+    </view>
+  </view>
+</view> 
+ 

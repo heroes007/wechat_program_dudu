@@ -1,0 +1,107 @@
+.message-page {
+  padding: 0;
+}
+
+.message-header {
+  width: 100%;
+  padding: 20rpx 30rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1rpx solid var(--border-color);
+  background-color: #ffffff;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.message-header .title {
+  font-size: 36rpx;
+  font-weight: bold;
+}
+
+.total-unread {
+  background-color: var(--primary-color);
+  color: #ffffff;
+  border-radius: 30rpx;
+  padding: 4rpx 20rpx;
+  font-size: 24rpx;
+}
+
+.message-list {
+  width: 100%;
+}
+
+.message-item {
+  width: 100%;
+  padding: 20rpx 30rpx;
+  display: flex;
+  align-items: center;
+  border-bottom: 1rpx solid var(--border-color);
+  background-color: #ffffff;
+  position: relative;
+}
+
+.message-item.pinned {
+  background-color: rgba(255, 107, 129, 0.05);
+}
+
+.avatar-container {
+  position: relative;
+  margin-right: 20rpx;
+}
+
+.message-item .avatar {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+}
+
+.message-content {
+  flex: 1;
+  overflow: hidden;
+}
+
+.message-top {
+  justify-content: space-between;
+  margin-bottom: 10rpx;
+}
+
+.nickname {
+  font-size: 30rpx;
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+.time {
+  font-size: 24rpx;
+  color: var(--text-gray);
+}
+
+.last-message {
+  font-size: 26rpx;
+  color: var(--text-gray);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width: 480rpx;
+  display: inline-block;
+}
+
+.pin-icon {
+  position: absolute;
+  top: 20rpx;
+  right: 30rpx;
+}
+
+.pin-icon image {
+  width: 32rpx;
+  height: 32rpx;
+  opacity: 0.5;
+}
+
+.no-message {
+  padding: 100rpx 0;
+  text-align: center;
+  color: var(--text-gray);
+} 

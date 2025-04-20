@@ -1,0 +1,109 @@
+/**app.wxss**/
+page {
+  --primary-color: #ff6b81;
+  --secondary-color: #ff4757;
+  --bg-color: #f7f7f7;
+  --text-color: #333333;
+  --text-gray: #999999;
+  --border-color: #eeeeee;
+  
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica,
+    Segoe UI, Arial, Roboto, 'PingFang SC', 'miui', 'Hiragino Sans GB', 'Microsoft Yahei',
+    sans-serif;
+  font-size: 28rpx;
+  line-height: 1.5;
+  color: var(--text-color);
+  background-color: var(--bg-color);
+  box-sizing: border-box;
+}
+
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  box-sizing: border-box;
+  padding: 0 30rpx;
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.gradient-bg {
+  background-image: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+}
+
+.card {
+  background-color: #ffffff;
+  border-radius: 16rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  background-color: #f0f0f0;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  color: #ffffff;
+  border: none;
+  border-radius: 40rpx;
+  padding: 16rpx 40rpx;
+  font-size: 28rpx;
+}
+
+.btn-outline {
+  background-color: transparent;
+  color: var(--primary-color);
+  border: 2rpx solid var(--primary-color);
+  border-radius: 40rpx;
+  padding: 14rpx 40rpx;
+  font-size: 28rpx;
+}
+
+.text-primary {
+  color: var(--primary-color);
+}
+
+.text-gray {
+  color: var(--text-gray);
+}
+
+.text-center {
+  text-align: center;
+}
+
+.badge {
+  position: absolute;
+  top: -6rpx;
+  right: -6rpx;
+  min-width: 32rpx;
+  height: 32rpx;
+  line-height: 32rpx;
+  background-color: var(--primary-color);
+  color: #ffffff;
+  font-size: 20rpx;
+  text-align: center;
+  border-radius: 16rpx;
+  padding: 0 8rpx;
+}
+
+.divider {
+  height: 1rpx;
+  background-color: var(--border-color);
+  width: 100%;
+  margin: 20rpx 0;
+} 
