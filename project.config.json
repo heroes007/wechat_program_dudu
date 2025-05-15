@@ -9,7 +9,7 @@
   "libVersion": "2.19.6",
   "projectname": "dudu-social",
   "setting": {
-    "urlCheck": true,
+    "urlCheck": false,
     "es6": true,
     "enhance": true,
     "postcss": true,

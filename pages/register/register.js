@@ -1,3 +1,5 @@
+import { UserApi } from '../../api/apis'
+
 Page({
   data: {
     step: 'phone', // 'phone' or 'verify'
@@ -115,9 +117,12 @@ Page({
       wx.showLoading({
         title: '登录中'
       })
-      
-      // 模拟登录请求
-      setTimeout(() => {
+
+      UserApi.login({
+        phonenumber: this.data.phone,
+        validCode: this.data.code
+      }).then(res => {
+        console.log(res)
         wx.hideLoading()
         
         // 登录成功，保存token
@@ -140,7 +145,7 @@ Page({
             }, 1500)
           }
         })
-      }, 1500)
+      })
     }
   },
   
