@@ -7,6 +7,9 @@
   <view class="message-list">
     <view wx:if="{{messageList.length === 0}}" class="no-message">
       <text>暂无消息</text>
+      <view class="retry-btn" bindtap="getConversationList">
+        <text>点击刷新</text>
+      </view>
     </view>
     
     <view wx:for="{{messageList}}" wx:key="conversationID" 

@@ -104,4 +104,18 @@
   padding: 100rpx 0;
   text-align: center;
   color: var(--text-gray);
+}
+
+.retry-btn {
+  margin-top: 30rpx;
+  padding: 10rpx 30rpx;
+  background-color: #f0f0f0;
+  color: var(--primary-color);
+  font-size: 26rpx;
+  border-radius: 30rpx;
+  display: inline-block;
+}
+
+.retry-btn:active {
+  opacity: 0.8;
 } 

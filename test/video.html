@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>视频播放器</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .video-container {
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        video {
+            width: 100%;
+            display: block;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="video-container">
+        <!-- 
+        poster属性指定在视频播放前显示的默认图片
+        controls属性添加视频控件
+        preload="none"表示不预加载视频，节省带宽
+        -->
+        <video id="myVideo" poster="https://dudu-1353584706.cos.ap-nanjing.myqcloud.com/864_raw.MP4" controls preload="none">
+            <source src="https://dudu-1353584706.cos.ap-nanjing.myqcloud.com/864_raw.MP4" type="video/mp4">
+            您的浏览器不支持 HTML5 视频标签。
+        </video>
+    </div>
+
+    <script>
+        // 您可以在这里添加更多的JavaScript交互功能
+        const video = document.getElementById('myVideo');
+        
+        // 示例：点击视频时播放或暂停
+        video.addEventListener('click', function() {
+            if (video.paused) {
+                video.play();
+            } else {
+                video.pause();
+            }
+        });
+    </script>
+</body>
+</html>

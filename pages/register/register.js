@@ -126,7 +126,7 @@ Page({
         wx.hideLoading()
         
         // 登录成功，保存token
-        wx.setStorageSync('token', 'mock_token_123456')
+        wx.setStorageSync('token', res.token)
         
         // 获取用户信息并设置全局状态
         const app = getApp()

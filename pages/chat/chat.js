@@ -1,225 +1,440 @@
-import { mockMessageList, mockChatMessages } from '../../utils/mock'
-import { formatTime } from '../../utils/util'
+import TencentCloudChat from '@tencentcloud/chat';
+import TIMUploadPlugin from 'tim-upload-plugin';
+import { genTestUserSig }  from '../../TUIKit/debug/GenerateTestUserSig';
+import IMManager from '../../utils/im';
+import { formatTime } from '../../utils/util';
 
 Page({
-  data: {
-    conversationID: '',
-    userInfo: null,
-    messages: [],
-    inputValue: '',
-    scrollIntoView: '',
-    isLoading: true
-  },
-
-  onLoad(options) {
-    const conversationID = options.id
-    
-    // 设置导航栏标题
-    const conversation = mockMessageList.find(item => item.conversationID === conversationID)
-    if (conversation) {
-      wx.setNavigationBarTitle({
-        title: conversation.nickName
-      })
-      
-      // 获取用户信息
-      this.setData({
-        conversationID,
-        userInfo: {
-          nickName: conversation.nickName,
-          avatarUrl: conversation.avatarUrl,
-          gender: 0, // 模拟数据中不包含性别，这里给默认值
-          age: 0,
-          tags: [],
-          occupation: '',
-          school: '',
-          location: '',
-          signature: ''
-        }
-      })
-      
-      // 获取聊天消息
-      this.loadMessages()
-    } else {
-      wx.showToast({
-        title: '会话不存在',
-        icon: 'error'
-      })
-      setTimeout(() => {
-        wx.navigateBack()
-      }, 1500)
-    }
-  },
-  
-  onReady() {
-    // 设置键盘高度
-    this.adjustKeyboardHeight()
-  },
-
-  // 加载消息
-  loadMessages() {
-    // 这里使用模拟数据，实际项目中应该使用IM SDK
-    const messages = mockChatMessages(this.data.conversationID)
-    
-    this.setData({
-      messages,
-      isLoading: false
-    }, () => {
-      // 滚动到最新消息
-      this.scrollToBottom()
-    })
-  },
-  
-  // 调整键盘高度
-  adjustKeyboardHeight() {
-    wx.onKeyboardHeightChange(res => {
-      const { height } = res
-      // 键盘高度变化时，可以调整页面布局
-      if (height > 0) {
-        // 键盘弹起
-        this.scrollToBottom()
-      }
-    })
-  },
-  
-  // 输入框变化
-  handleInputChange(e) {
-    this.setData({
-      inputValue: e.detail.value
-    })
-  },
-  
-  // 发送消息
-  sendMessage() {
-    const { inputValue, messages, conversationID } = this.data
-    
-    if (!inputValue.trim()) return
-    
-    // 构建新消息
-    const newMessage = {
-      type: 'text',
-      content: inputValue,
-      time: Date.now(),
-      sender: 'self'
-    }
-    
-    // 更新消息列表
-    const updatedMessages = [...messages, newMessage]
-    
-    this.setData({
-      messages: updatedMessages,
-      inputValue: ''
-    }, () => {
-      // 滚动到底部
-      this.scrollToBottom()
-      
-      // 这里可以调用IM SDK发送消息
-      console.log('发送消息:', newMessage)
-      
-      // 模拟对方回复
-      this.simulateReply()
-    })
-  },
-  
-  // 模拟对方回复
-  simulateReply() {
-    const { messages, conversationID } = this.data
-    
-    // 随机回复内容
-    const replies = [
-      '好的，没问题',
-      '嗯嗯，我知道了',
-      '哈哈，有意思',
-      '什么时候有空出来玩？',
-      '我正好有空，我们聊聊吧'
-    ]
-    
-    const randomReply = replies[Math.floor(Math.random() * replies.length)]
-    
-    // 2秒后回复
-    setTimeout(() => {
-      // 构建新消息
-      const replyMessage = {
-        type: 'text',
-        content: randomReply,
-        time: Date.now(),
-        sender: conversationID.replace('c', 'user')
-      }
-      
-      // 更新消息列表
-      const updatedMessages = [...this.data.messages, replyMessage]
-      
-      this.setData({
-        messages: updatedMessages
-      }, () => {
-        // 滚动到底部
-        this.scrollToBottom()
-      })
-    }, 2000)
-  },
-  
-  // 滚动到底部
-  scrollToBottom() {
-    const { messages } = this.data
-    if (messages.length === 0) return
-    
-    const lastMessageId = `msg-${messages.length - 1}`
-    this.setData({
-      scrollIntoView: lastMessageId
-    })
-  },
-  
-  // 点击发送图片
-  sendImage() {
-    wx.chooseImage({
-      count: 1,
-      success: (res) => {
-        const tempFilePath = res.tempFilePaths[0]
+    data: {
+        config: {
+          userID: 'test1', //User ID
+          SDKAPPID: 1600083035, // Your SDKAppID
+          SECRETKEY: 'ccbe2a7880675d333a4ae8902fac40d171b7253cbad72fecf0e5ff58194a5ab3', // Your secretKey
+          EXPIRETIME: 604800,
+        },
+        conversationID: '',
+        conversationType: '', // 会话类型：C2C或GROUP
+        receiverID: '', // 接收者ID（单聊时使用）
+        messageList: [], // 消息列表
+        inputMessage: '', // 输入框的文本
+        scrollToMessage: '', // 滚动到指定消息
+        conversation: {}, // 会话信息
+        isLoading: false, // 是否正在加载更多消息
         
-        // 构建新消息
-        const newMessage = {
-          type: 'image',
-          content: tempFilePath,
-          time: Date.now(),
-          sender: 'self'
+        // 面板控制
+        isVoiceInputActive: false, // 语音输入是否激活
+        isEmojiPanelVisible: false, // 表情面板是否可见
+        isMorePanelVisible: false, // 更多功能面板是否可见
+        
+        // 默认头像
+        selfAvatar: '/assets/images/default-avatar.png',
+        otherAvatar: '/assets/images/default-avatar.png'
+    },
+     onLoad(options) {
+       this.setData({
+        conversationID: options.conversationID,
+        conversationType: options.type || 'C2C'
+       });
+        const userSig = genTestUserSig(this.data.config).userSig;
+        wx.$TUIKit = TencentCloudChat.create({
+            SDKAppID: this.data.config.SDKAPPID
+        });
+        wx.$chat_SDKAppID = this.data.config.SDKAPPID;
+        wx.$chat_userID = this.data.config.userID;
+        wx.$chat_userSig = userSig;
+        wx.TencentCloudChat = TencentCloudChat;
+        wx.$TUIKit.registerPlugin({ 'tim-upload-plugin': TIMUploadPlugin });            
+        wx.$TUIKit.login({
+            userID: this.data.config.userID,
+            userSig
+        });
+        wx.setStorage({
+            key: 'currentUserID',
+            data: [],
+        });
+        wx.$TUIKit.on(wx.TencentCloudChat.EVENT.SDK_READY, this.onSDKReady,this);
+        
+        // 从会话ID中提取接收者ID
+        if (this.data.conversationType === 'C2C') {
+          // C2C会话格式为：C2C_USERID
+          const receiverID = this.data.conversationID.replace('C2C_', '');
+          this.setData({ receiverID });
         }
         
-        // 更新消息列表
-        const updatedMessages = [...this.data.messages, newMessage]
+        // 监听IM消息接收事件
+        const app = getApp();
+        app.globalEvent.on('im:messageReceived', this.onMessageReceived.bind(this));
+        
+        // 获取会话信息
+        this.getConversationProfile();
+        
+        // 获取消息列表
+        this.getMessageList();
+    },
+    onUnload() {
+        wx.$TUIKit.logout();
+        wx.$TUIKit.off(wx.TencentCloudChat.EVENT.SDK_READY, this.onSDKReady,this);
+        
+        // 取消事件监听
+        const app = getApp();
+        app.globalEvent.off('im:messageReceived', this.onMessageReceived.bind(this));
+    },
+    onSDKReady() {
+        const TUIKit = this.selectComponent('#TUIKit');
+        TUIKit.init();
+    },
+    // 收到新消息
+    onMessageReceived(messageList) {
+        // 过滤出属于当前会话的消息
+        const validMessages = messageList.filter(message => 
+          message.conversationID === this.data.conversationID
+        );
+        
+        if (validMessages.length > 0) {
+          // 添加新消息到列表
+          this.addMessagesToList(validMessages);
+          // 设置消息已读
+          IMManager.setMessageRead(this.data.conversationID);
+        }
+    },
+    // 获取会话信息
+    async getConversationProfile() {
+        try {
+          const { data: conversationList } = await IMManager.getConversationList();
+          const conversation = conversationList.find(item => item.conversationID === this.data.conversationID);
+          
+          if (conversation) {
+            let nickname = '';
+            let avatar = this.data.otherAvatar;
+            
+            if (conversation.type === 'C2C') {
+              // 单聊
+              nickname = conversation.userProfile?.nick || conversation.userProfile?.userID || '对方';
+              avatar = conversation.userProfile?.avatar || this.data.otherAvatar;
+            } else if (conversation.type === 'GROUP') {
+              // 群聊
+              nickname = conversation.groupProfile?.name || '群聊';
+              avatar = conversation.groupProfile?.avatar || this.data.otherAvatar;
+            }
+            
+            this.setData({
+              conversation: {
+                ...conversation,
+                nickname,
+                avatar
+              },
+              otherAvatar: avatar
+            });
+            
+            // 设置导航栏标题
+            wx.setNavigationBarTitle({
+              title: nickname
+            });
+          }
+        } catch (error) {
+          console.error('获取会话信息失败', error);
+        }
+    },
+    // 获取消息列表
+    async getMessageList() {
+        try {
+          this.setData({ isLoading: true });
+          
+          const { data: result } = await IMManager.getMessageList(this.data.conversationID, 20);
+          const { messageList, isCompleted } = result;
+          
+          // 处理消息，添加UI需要的属性
+          const formattedMessages = this.formatMessages(messageList);
+          
+          this.setData({
+            messageList: formattedMessages,
+            isLoading: false
+          });
+          
+          // 滚动到最新消息
+          if (formattedMessages.length > 0) {
+            this.setData({
+              scrollToMessage: formattedMessages[formattedMessages.length - 1].ID
+            });
+          }
+          
+          // 设置消息已读
+          IMManager.setMessageRead(this.data.conversationID);
+        } catch (error) {
+          console.error('获取消息列表失败', error);
+          this.setData({ isLoading: false });
+        }
+    },
+    // 格式化消息，添加UI需要的属性
+    formatMessages(messages) {
+        const { selfAvatar, otherAvatar } = this.data;
+        const userInfo = getApp().globalData.userInfo || {};
+        const selfID = IMManager.userID;
+        
+        // 时间间隔阈值（5分钟，单位毫秒）
+        const timeThreshold = 5 * 60 * 1000;
+        
+        return messages.map((message, index) => {
+          // 是否是自己发送的消息
+          const isSelf = message.flow === 'out';
+          
+          // 获取头像
+          let avatar = isSelf ? (userInfo.avatarUrl || selfAvatar) : otherAvatar;
+          
+          // 如果有发送者资料，优先使用
+          if (!isSelf && message.from) {
+            avatar = message.senderProfile?.avatar || otherAvatar;
+          }
+          
+          // 计算是否显示时间
+          let isShowTime = false;
+          if (index === 0) {
+            // 第一条消息总是显示时间
+            isShowTime = true;
+          } else {
+            // 与前一条消息时间间隔超过阈值，显示时间
+            const prevMsg = messages[index - 1];
+            isShowTime = (message.time - prevMsg.time) > timeThreshold;
+          }
+          
+          // 格式化时间
+          const messageTime = new Date(message.time * 1000);
+          const timeFormatted = this.formatMessageTime(messageTime);
+          
+          return {
+            ...message,
+            avatar,
+            isShowTime,
+            timeFormatted,
+            nick: message.senderProfile?.nick || message.from
+          };
+        });
+    },
+    // 加载更多消息
+    async loadMoreMessages() {
+        if (this.data.isLoading || this.data.messageList.length === 0) return;
+        
+        const firstMessage = this.data.messageList[0];
+        if (!firstMessage) return;
+        
+        try {
+          this.setData({ isLoading: true });
+          
+          const { data: result } = await IMManager.chat.getMessageList({
+            conversationID: this.data.conversationID,
+            nextReqMessageID: firstMessage.ID,
+            count: 15
+          });
+          
+          const { messageList, isCompleted } = result;
+          if (messageList.length === 0) {
+            this.setData({ isLoading: false });
+            return;
+          }
+          
+          // 处理消息，添加UI需要的属性
+          const formattedMessages = this.formatMessages(messageList);
+          
+          // 添加到现有消息列表前面
+          this.setData({
+            messageList: [...formattedMessages, ...this.data.messageList],
+            isLoading: false
+          });
+        } catch (error) {
+          console.error('加载更多消息失败', error);
+          this.setData({ isLoading: false });
+        }
+    },
+    // 添加新消息到列表
+    addMessagesToList(messages) {
+        const formattedMessages = this.formatMessages(messages);
+        const updatedMessageList = [...this.data.messageList, ...formattedMessages];
         
         this.setData({
-          messages: updatedMessages
-        }, () => {
-          // 滚动到底部
-          this.scrollToBottom()
+          messageList: updatedMessageList,
+          scrollToMessage: formattedMessages[formattedMessages.length - 1].ID
+        });
+    },
+    // 格式化消息时间显示
+    formatMessageTime(date) {
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const yesterday = new Date(today);
+        yesterday.setDate(yesterday.getDate() - 1);
+        
+        // 判断是否是今天
+        if (date >= today) {
+          return formatTime(date, 'HH:mm');
+        }
+        
+        // 判断是否是昨天
+        if (date >= yesterday && date < today) {
+          return `昨天 ${formatTime(date, 'HH:mm')}`;
+        }
+        
+        // 判断是否是今年
+        if (date.getFullYear() === now.getFullYear()) {
+          return formatTime(date, 'MM-DD HH:mm');
+        }
+        
+        // 其他情况
+        return formatTime(date, 'YYYY-MM-DD HH:mm');
+    },
+    // 输入框内容变化
+    onInputChange(e) {
+        this.setData({
+          inputMessage: e.detail.value
+        });
+    },
+    // 发送文本消息
+    async sendMessage() {
+        const { inputMessage, receiverID, conversationType } = this.data;
+        if (!inputMessage.trim()) return;
+        
+        try {
+          // 构建消息对象
+          const to = conversationType === 'C2C' ? receiverID : this.data.conversationID.replace('GROUP_', '');
           
-          // 这里可以调用IM SDK发送图片消息
-          console.log('发送图片:', newMessage)
-        })
-      }
-    })
-  },
-  
-  // 点击发送语音
-  handleVoiceStart() {
-    // 这里需要使用录音API
-    wx.showToast({
-      title: '语音功能开发中',
-      icon: 'none'
-    })
-  },
-  
-  // 格式化时间
-  formatTime(timestamp) {
-    return formatTime(timestamp)
-  },
-  
-  // 查看用户信息
-  viewUserProfile() {
-    const { conversationID } = this.data
-    const userId = conversationID.replace('c', 'user')
-    
-    wx.navigateTo({
-      url: `/pages/userDetail/userDetail?id=${userId}`
-    })
-  }
-}) 
+          // 发送消息
+          const result = await IMManager.sendTextMessage(to, inputMessage, conversationType);
+          
+          // 重置输入框
+          this.setData({
+            inputMessage: ''
+          });
+          
+          // 隐藏所有面板
+          this.hideAllPanels();
+          
+          // 添加消息到列表
+          this.addMessagesToList([result.data.message]);
+        } catch (error) {
+          console.error('发送消息失败', error);
+          wx.showToast({
+            title: '发送失败',
+            icon: 'none'
+          });
+        }
+    },
+    // 选择图片
+    chooseImage() {
+        wx.chooseMedia({
+          count: 1,
+          mediaType: ['image'],
+          sourceType: ['album'],
+          success: (res) => {
+            const tempFilePath = res.tempFiles[0].tempFilePath;
+            this.sendImageMessage(tempFilePath);
+          }
+        });
+    },
+    // 拍摄照片
+    takePhoto() {
+        wx.chooseMedia({
+          count: 1,
+          mediaType: ['image'],
+          sourceType: ['camera'],
+          success: (res) => {
+            const tempFilePath = res.tempFiles[0].tempFilePath;
+            this.sendImageMessage(tempFilePath);
+          }
+        });
+    },
+    // 发送图片消息
+    async sendImageMessage(filePath) {
+        try {
+          const { receiverID, conversationType } = this.data;
+          const to = conversationType === 'C2C' ? receiverID : this.data.conversationID.replace('GROUP_', '');
+          
+          // 创建图片消息
+          const message = IMManager.chat.createImageMessage({
+            to,
+            conversationType,
+            payload: {
+              file: filePath
+            }
+          });
+          
+          // 发送消息
+          const result = await IMManager.chat.sendMessage(message);
+          
+          // 隐藏所有面板
+          this.hideAllPanels();
+          
+          // 添加消息到列表
+          this.addMessagesToList([result.data.message]);
+        } catch (error) {
+          console.error('发送图片失败', error);
+          wx.showToast({
+            title: '发送图片失败',
+            icon: 'none'
+          });
+        }
+    },
+    // 预览图片
+    previewImage(e) {
+        const { src } = e.currentTarget.dataset;
+        
+        // 获取所有图片消息的URL
+        const imageUrls = this.data.messageList
+          .filter(message => message.type === 'TIMImageElem')
+          .map(message => message.payload.imageInfoArray[0].url);
+        
+        wx.previewImage({
+          current: src,
+          urls: imageUrls
+        });
+    },
+    // 切换语音输入
+    toggleVoiceInput() {
+        this.setData({
+          isVoiceInputActive: !this.data.isVoiceInputActive,
+          isEmojiPanelVisible: false,
+          isMorePanelVisible: false
+        });
+    },
+    // 切换表情面板
+    toggleEmojiPanel() {
+        this.setData({
+          isEmojiPanelVisible: !this.data.isEmojiPanelVisible,
+          isMorePanelVisible: false,
+          isVoiceInputActive: false
+        });
+    },
+    // 切换更多功能面板
+    toggleMorePanel() {
+        this.setData({
+          isMorePanelVisible: !this.data.isMorePanelVisible,
+          isEmojiPanelVisible: false,
+          isVoiceInputActive: false
+        });
+    },
+    // 隐藏所有面板
+    hideAllPanels() {
+        this.setData({
+          isMorePanelVisible: false,
+          isEmojiPanelVisible: false,
+          isVoiceInputActive: false
+        });
+    },
+    // 开始录音
+    startRecording() {
+        // 实现录音功能
+        wx.showToast({
+          title: '开始录音',
+          icon: 'none'
+        });
+    },
+    // 停止录音
+    stopRecording() {
+        // 实现停止录音并发送语音消息
+        wx.showToast({
+          title: '录音功能暂未实现',
+          icon: 'none'
+        });
+    },
+    // 返回上一页
+    goBack() {
+        wx.navigateBack();
+    }
+});

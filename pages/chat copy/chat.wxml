@@ -1,0 +1,105 @@
+<view class="container chat-page">
+  <!-- 聊天消息区域 -->
+  <scroll-view class="messages-container" 
+               scroll-y="{{true}}" 
+               scroll-into-view="{{scrollIntoView}}"
+               scroll-with-animation="{{true}}"
+               enhanced="{{true}}"
+               show-scrollbar="{{false}}"
+               bindscrolltoupper="loadMoreMessages">
+    
+    <!-- 加载更多指示器 -->
+    <view class="loading-more" wx:if="{{!isCompleted}}">
+      <view class="loading-indicator {{isLoading ? 'active' : ''}}"></view>
+      <text>{{isLoading ? '加载中...' : '下拉加载更多'}}</text>
+    </view>
+    
+    <view class="loading" wx:if="{{isLoading && messages.length === 0}}">
+      <text>加载中...</text>
+    </view>
+    
+    <block wx:for="{{messages}}" wx:key="time">
+      <view id="msg-{{index}}" class="message-item {{item.sender === 'self' ? 'self' : 'other'}}">
+        
+        <!-- 头像 -->
+        <view class="avatar-container" wx:if="{{item.sender !== 'self'}}" bindtap="viewUserProfile">
+          <image class="avatar" src="{{userInfo.avatarUrl}}" mode="aspectFill"></image>
+        </view>
+        
+        <!-- 消息内容 -->
+        <view class="message-content">
+          <!-- 文本消息 -->
+          <view class="text-message" wx:if="{{item.type === 'text'}}">
+            {{item.content}}
+          </view>
+          
+          <!-- 图片消息 -->
+          <view class="image-message" wx:elif="{{item.type === 'image'}}">
+            <image src="{{item.content}}" mode="widthFix" bindtap="previewImage" data-src="{{item.content}}"></image>
+          </view>
+          
+          <!-- 语音消息 -->
+          <view class="audio-message" wx:elif="{{item.type === 'audio'}}">
+            <view class="audio-content {{isPlayingAudio && currentAudioMessageId === item.id ? 'playing' : ''}}" 
+                  bindtap="playAudio" 
+                  data-url="{{item.content.url}}" 
+                  data-duration="{{item.content.duration}}"
+                  data-id="{{item.id}}">
+              <image class="audio-icon" src="/assets/icons/audio.png" mode="aspectFit"></image>
+              <text class="audio-duration">{{item.content.duration}}''</text>
+            </view>
+          </view>
+          
+          <!-- 其他类型消息 -->
+          <view class="other-message" wx:else>
+            <text>暂不支持的消息类型</text>
+          </view>
+          
+          <!-- 消息时间 -->
+          <view class="message-time">{{formatTime(item.time)}}</view>
+        </view>
+        
+        <!-- 自己的头像 -->
+        <view class="avatar-container" wx:if="{{item.sender === 'self'}}">
+          <image class="avatar" src="/assets/images/default-avatar.png" mode="aspectFill"></image>
+        </view>
+      </view>
+    </block>
+    
+    <!-- 底部留白，防止输入框遮挡消息 -->
+    <view class="bottom-space"></view>
+  </scroll-view>
+  
+  <!-- 底部输入栏 -->
+  <view class="input-container">
+    <view class="input-box flex-row">
+      <!-- 语音按钮 -->
+      <view class="voice-btn">
+        <image src="/assets/icons/voice.png" mode="aspectFit" bindtap="handleVoiceStart"></image>
+      </view>
+      
+      <!-- 输入框 -->
+      <input class="text-input" 
+             type="text" 
+             value="{{inputValue}}" 
+             bindinput="handleInputChange"
+             placeholder="输入消息..." 
+             confirm-type="send"
+             bindconfirm="sendMessage"
+             cursor-spacing="10"></input>
+      
+      <!-- 表情按钮 -->
+      <view class="emoji-btn">
+        <image src="/assets/icons/emoji.png" mode="aspectFit"></image>
+      </view>
+      
+      <!-- 更多按钮或发送按钮 -->
+      <view class="more-btn" wx:if="{{!inputValue}}">
+        <image src="/assets/icons/more.png" mode="aspectFit" bindtap="sendImage"></image>
+      </view>
+      <view class="send-btn" wx:else bindtap="sendMessage">
+        <text>发送</text>
+      </view>
+    </view>
+  </view>
+</view> 
