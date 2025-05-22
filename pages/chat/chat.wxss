@@ -15,8 +15,8 @@
   box-sizing: border-box;
   overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
-  margin-top: 130rpx; /* 适配顶部导航栏高度 */
-  height: calc(100vh - 130rpx - 120rpx); /* 减去顶部导航栏和底部输入区域高度 */
+  margin-top: calc(env(safe-area-inset-top) + 90rpx); /* 适配顶部安全区域和导航栏高度 */
+  height: calc(100vh - env(safe-area-inset-top) - 90rpx - 120rpx); /* 减去顶部安全区域、导航栏和底部输入区域高度 */
 }
 
 /* 加载中提示 */
@@ -190,25 +190,6 @@
   height: 60rpx;
 }
 
-/* 顶部导航栏 */
-.chat-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 90rpx;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 30rpx;
-  box-sizing: border-box;
-  background-color: #ffffff;
-  border-bottom: 1rpx solid var(--border-color);
-  z-index: 100;
-  padding-top: 40rpx; /* 适配顶部安全区域 */
-  height: 130rpx; /* 含顶部安全区域高度 */
-}
-
 .chat-title {
   font-size: 34rpx;
   font-weight: 500;
@@ -317,7 +298,7 @@ page {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-color: #f5f5f5;
+  background-color: #fff;
   box-sizing: border-box;
   overflow: hidden;
 }
@@ -330,9 +311,12 @@ page {
   background-color: #ffffff;
   border-bottom: 1px solid #eaeaea;
   box-sizing: border-box;
-  height: 44px;
-  position: relative;
-  z-index: 10;
+  height: 60px;
+  position: fixed;
+  top: env(safe-area-inset-top);
+  left: 0;
+  width: 100%;
+  z-index: 100;
 }
 
 .back-button {
@@ -346,13 +330,37 @@ page {
   height: 100%;
 }
 
-.title {
+.user-info {
   flex: 1;
-  font-size: 17px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.user-name {
+  font-size: 16px;
   font-weight: 500;
-  text-align: center;
   color: #333;
-  margin-right: 34px; /* 为了标题居中 */
+  margin-bottom: 3px;
+}
+
+.user-status {
+  font-size: 12px;
+  color: #999;
+  line-height: 1.2;
+}
+
+.header-actions {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-actions image {
+  width: 18px;
+  height: 18px;
 }
 
 /* 消息列表 */
@@ -361,6 +369,7 @@ page {
   padding: 10px 15px;
   box-sizing: border-box;
   overflow-y: auto;
+  padding-top: calc(env(safe-area-inset-top) + 90rpx + 15px); /* 为顶部安全区域和导航栏留出空间 */
 }
 
 .load-more {
@@ -388,26 +397,27 @@ page {
 
 /* 消息项 */
 .message-item {
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 
 .time-divider {
   text-align: center;
-  margin: 10px 0;
+  margin: 15px 0;
 }
 
 .time-divider text {
   display: inline-block;
-  padding: 2px 8px;
-  background-color: rgba(0, 0, 0, 0.1);
-  color: #999;
+  padding: 3px 10px;
+  background-color: rgba(0, 0, 0, 0.06);
+  color: #888;
   font-size: 12px;
-  border-radius: 4px;
+  border-radius: 10px;
 }
 
 .message-content {
   display: flex;
-  margin-top: 8px;
+  margin-top: 10px;
+  align-items: flex-start;
 }
 
 .self .message-content {
@@ -417,24 +427,25 @@ page {
 .avatar {
   width: 40px;
   height: 40px;
-  border-radius: 4px;
+  border-radius: 50%;
   background-color: #ddd;
 }
 
 .bubble-wrapper {
   max-width: 70%;
-  margin: 0 10px;
+  margin: 0 12px;
 }
 
 .nickname {
-  font-size: 12px;
-  color: #999;
-  margin-bottom: 2px;
+  font-size: 13px;
+  color: #888;
+  margin-bottom: 5px;
+  font-weight: 500;
 }
 
 .bubble {
   padding: 10px 12px;
-  border-radius: 4px;
+  border-radius: 18px;
   position: relative;
   word-break: break-word;
 }
@@ -442,18 +453,19 @@ page {
 .other-bubble {
   background-color: #ffffff;
   border: 1px solid #eaeaea;
-  border-top-left-radius: 0;
+  border-radius: 18px;
 }
 
 .self-bubble {
-  background-color: #07C160;
+  background-color: #4e6ef2;
   color: #fff;
-  border-top-right-radius: 0;
+  border-radius: 18px;
 }
 
 .text-content {
   font-size: 16px;
-  line-height: 1.4;
+  line-height: 1.5;
+  letter-spacing: 0.3px;
 }
 
 .image-content {
@@ -504,7 +516,7 @@ page {
 .input-box {
   flex: 1;
   background-color: #f5f5f5;
-  border-radius: 4px;
+  border-radius: 18px;
   padding: 8px 12px;
   margin: 0 5px;
   min-height: 20px;
@@ -530,8 +542,8 @@ page {
 .send-button {
   width: 60px;
   height: 36px;
-  background-color: #07C160;
-  border-radius: 4px;
+  background-color: #4e6ef2;
+  border-radius: 18px;
   display: flex;
   align-items: center;
   justify-content: center;

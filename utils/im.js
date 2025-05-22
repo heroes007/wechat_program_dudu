@@ -94,12 +94,18 @@ class IMManager {
 
   // 发送文本消息
   sendTextMessage(to, text, conversationType = 'C2C') {
+    console.log('发送文本消息', to, text, conversationType);
+
+    const toId = to.replace('C2C', '');
+
     const message = this.chat.createTextMessage({
-      to,
+      to: toId,
       conversationType,
       payload: { text }
     });
     
+    console.log('message', message);
+
     return this.chat.sendMessage(message);
   }
 

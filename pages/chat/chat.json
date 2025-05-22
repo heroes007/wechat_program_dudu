@@ -1,6 +1,9 @@
 {
-    "usingComponents": {
-      "TUIKit": "../../TUIKit/index"
-    },
-      "navigationStyle": "custom"
-  }
+  "usingComponents": {
+    "TUIKit": "../../TUIKit/index"
+  },
+  "navigationStyle": "custom",
+  "disableScroll": false,
+  "navigationBarTextStyle": "black",
+  "backgroundColor": "#ffffff"
+}

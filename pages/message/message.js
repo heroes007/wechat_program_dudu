@@ -75,7 +75,7 @@ Page({
         });
       }
 
-      const { data: conversationList } = await IMManager.getConversationList();
+      const { data: { conversationList } } = await IMManager.getConversationList();
       console.log('会话列表：', conversationList);
 
       // 转换会话数据为页面需要的格式
@@ -186,6 +186,7 @@ Page({
     
     // 导航到聊天页面
     const conversation = this.data.messageList.find(item => item.conversationID === id);
+
     if (conversation) {
       wx.navigateTo({
         url: `/pages/chat/chat?id=${id}&type=${conversation.type}`

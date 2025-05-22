@@ -4,7 +4,13 @@
     <view class="back-button" bindtap="goBack">
       <image src="/assets/icons/back.png" mode="aspectFit"></image>
     </view>
-    <view class="title">{{conversation.nickname || '对话'}}</view>
+    <view class="user-info">
+      <view class="user-name">{{conversation.nickname || '对话'}}</view>
+      <view class="user-status">{{conversation.status || '15分钟前'}}{{conversation.lastAction ? '，' + conversation.lastAction : ''}}{{conversation.distance ? '，' + conversation.distance : ''}}</view>
+    </view>
+    <view class="header-actions">
+      <image src="/assets/icons/more.png" mode="aspectFit"></image>
+    </view>
   </view>
 
   <!-- 消息列表 -->
