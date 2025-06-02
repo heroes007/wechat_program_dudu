@@ -1,12 +1,4 @@
 <view class="container index-page">
-  <!-- 顶部标签 -->
-  <view class="top-tags flex-row">
-    <view class="tag online-tag flex-row">
-      <view class="dot"></view>
-      <text>{{liveUsers}}人在线</text>
-    </view>
-  </view>
-  
   <!-- 推荐卡片区域 -->
   <view class="cards-container" style="height: {{swiperHeight}}px">
     <view wx:if="{{recommendUsers.length > 0}}" 
@@ -32,11 +24,6 @@
             <view class="profile-text">{{formatUserProfile(recommendUsers[currentIndex])}}</view>
           </view>
           
-          <!-- 距离信息 -->
-          <view class="distance-info" wx:if="{{recommendUsers[currentIndex].distance}}">
-            <text>{{formatDistance(recommendUsers[currentIndex].distance)}}</text>
-          </view>
-          
           <!-- 在线状态 -->
           <view class="online-status" wx:if="{{recommendUsers[currentIndex].isOnline}}">
             <view class="online-dot"></view>
@@ -60,12 +47,12 @@
   </view>
   
   <!-- 底部操作按钮 -->
-  <view class="action-buttons flex-row">
-    <view class="btn-skip" bindtap="handleSkip">
-      <image src="/assets/icons/skip.png" mode="aspectFit"></image>
-    </view>
+  <view class="action-buttons">
     <view class="btn-like" bindtap="handleLike">
       <image src="/assets/icons/like.png" mode="aspectFit"></image>
+    </view>
+    <view class="btn-skip" bindtap="handleSkip">
+      <image src="/assets/icons/skip.png" mode="aspectFit"></image>
     </view>
   </view>
 </view> 

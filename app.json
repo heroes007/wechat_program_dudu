@@ -10,9 +10,9 @@
   ],
   "window": {
     "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#ff6b81",
+    "navigationBarBackgroundColor": "#ffffff",
     "navigationBarTitleText": "嘟嘟",
-    "navigationBarTextStyle": "white"
+    "navigationBarTextStyle": "black"
   },
   "tabBar": {
     "color": "#8E8E8E",

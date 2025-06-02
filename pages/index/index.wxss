@@ -159,10 +159,16 @@
 
 /* 操作按钮 */
 .action-buttons {
+  position: absolute;
+  right: 0;
+  bottom: 0;
   width: 100%;
   padding: 40rpx 0;
   justify-content: center;
   z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
 }
 
 .btn-skip, .btn-like {
@@ -173,7 +179,7 @@
   align-items: center;
   justify-content: center;
   box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
-  margin: 0 30rpx;
+  margin: 20rpx;
 }
 
 .btn-skip {

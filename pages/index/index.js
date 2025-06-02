@@ -21,7 +21,7 @@ Page({
       windowHeight,
       windowWidth,
       recommendUsers: mockRecommendUsers,
-      swiperHeight: windowHeight * 0.7
+      swiperHeight: windowHeight * 1
     })
     
     // 创建动画实例
@@ -143,6 +143,7 @@ Page({
   
   // 格式化用户年龄和性别
   formatUserAge(user) {
+    console.log('use1-------------------------', user)
     return formatAge(user.age, user.gender)
   },
   

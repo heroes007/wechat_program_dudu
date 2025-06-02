@@ -46,7 +46,8 @@
     "showES6CompileOption": false,
     "useCompilerPlugins": [
       "typescript"
-    ]
+    ],
+    "ignoreUploadUnusedFiles": true
   },
   "appid": "wxfced909c6c3c733f",
   "condition": {},
