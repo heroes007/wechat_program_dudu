@@ -1,6 +1,6 @@
-<view class="chat-container">
+<view class="chat-container" style="height: {{windowHeight}}px;">
   <!-- 导航栏 -->
-  <view class="chat-header">
+  <view class="chat-header" style="padding-top: {{statusBarHeight}}px;">
     <view class="back-button" bindtap="goBack">
       <image src="/assets/icons/back.png" mode="aspectFit"></image>
     </view>
@@ -8,14 +8,15 @@
       <view class="user-name">{{conversation.nickname || '对话'}}</view>
       <view class="user-status">{{conversation.status || '15分钟前'}}{{conversation.lastAction ? '，' + conversation.lastAction : ''}}{{conversation.distance ? '，' + conversation.distance : ''}}</view>
     </view>
-    <view class="header-actions">
-      <image src="/assets/icons/more.png" mode="aspectFit"></image>
+    <view class="header-actions" bindtap="showMoreActions">
+      <text class="more-text">⋯</text>
     </view>
   </view>
 
   <!-- 消息列表 -->
   <scroll-view 
     class="message-list" 
+    style="margin-top: {{navBarHeight}}px;"
     scroll-y 
     scroll-into-view="{{scrollToMessage}}"
     bindscrolltoupper="loadMoreMessages"

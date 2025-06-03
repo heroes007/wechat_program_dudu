@@ -1,8 +1,8 @@
 <view class="container message-page">
-  <view class="message-header">
+  <!-- <view class="message-header">
     <text class="title">消息</text>
     <view class="total-unread" wx:if="{{totalUnread > 0}}">{{totalUnread}}</view>
-  </view>
+  </view> -->
   
   <view class="message-list">
     <view wx:if="{{messageList.length === 0}}" class="no-message">

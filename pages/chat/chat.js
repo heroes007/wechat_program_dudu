@@ -32,6 +32,29 @@ Page({
   },
   onLoad(options) {
     console.log('options', options);
+
+    // 获取系统信息，包括状态栏高度
+    wx.getSystemInfo({
+      success: (res) => {
+        const { windowHeight, statusBarHeight, system } = res;
+        const isIOS = system.toLowerCase().includes('ios');
+        
+        this.setData({
+          windowHeight,
+          statusBarHeight,
+          isIOS,
+          // 自定义导航栏总高度 = 状态栏高度 + 导航栏内容高度
+          navBarHeight: statusBarHeight + 44
+        });
+        
+        console.log('设备信息:', {
+          windowHeight,
+          statusBarHeight,
+          isIOS,
+          navBarHeight: statusBarHeight + 44
+        });
+      }
+    });
     this.setData({
       conversationID: options.id,
       conversationType: options.type || 'C2C'
@@ -502,6 +525,104 @@ Page({
   },
   // 返回上一页
   goBack() {
-    wx.navigateBack();
+    // 添加触觉反馈
+    wx.vibrateShort({
+      type: 'light'
+    });
+    
+    // 返回上一页
+    wx.navigateBack({
+      delta: 1,
+      fail: () => {
+        // 如果没有上一页，则跳转到首页
+        wx.reLaunch({
+          url: '/pages/index/index'
+        });
+      }
+    });
+  },
+  // 显示更多操作菜单
+  showMoreActions() {
+    const items = ['查看资料', '设置消息免打扰', '清空聊天记录', '删除聊天'];
+    
+    wx.showActionSheet({
+      itemList: items,
+      success: (res) => {
+        const tapIndex = res.tapIndex;
+        switch (tapIndex) {
+          case 0:
+            this.viewProfile();
+            break;
+          case 1:
+            this.toggleNotification();
+            break;
+          case 2:
+            this.clearChatHistory();
+            break;
+          case 3:
+            this.deleteChat();
+            break;
+        }
+      },
+      fail: (err) => {
+        console.log('用户取消操作', err);
+      }
+    });
+  },
+  // 查看用户资料
+  viewProfile() {
+    wx.showToast({
+      title: '查看资料功能开发中',
+      icon: 'none'
+    });
+  },
+  // 切换消息免打扰
+  toggleNotification() {
+    wx.showToast({
+      title: '消息免打扰设置开发中',
+      icon: 'none'
+    });
+  },
+  // 清空聊天记录
+  clearChatHistory() {
+    wx.showModal({
+      title: '确认清空',
+      content: '确定要清空聊天记录吗？此操作无法撤销。',
+      confirmText: '清空',
+      confirmColor: '#ff4d4f',
+      success: (res) => {
+        if (res.confirm) {
+          this.setData({
+            messageList: []
+          });
+          wx.showToast({
+            title: '聊天记录已清空',
+            icon: 'success'
+          });
+        }
+      }
+    });
+  },
+  // 删除聊天
+  deleteChat() {
+    wx.showModal({
+      title: '确认删除',
+      content: '确定要删除这个聊天吗？此操作无法撤销。',
+      confirmText: '删除',
+      confirmColor: '#ff4d4f',
+      success: (res) => {
+        if (res.confirm) {
+          // 这里应该调用删除会话的API
+          wx.showToast({
+            title: '聊天已删除',
+            icon: 'success'
+          });
+          // 返回上一页
+          setTimeout(() => {
+            this.goBack();
+          }, 1000);
+        }
+      }
+    });
   }
 });
