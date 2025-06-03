@@ -12,7 +12,7 @@ export const request = (options) => {
     const token = wx.getStorageSync('token');
     const header = {
       'content-type': 'application/json',
-      ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+      ...(token ? { 'Authorization': `${token}` } : {}),
       ...options.header
     };
 

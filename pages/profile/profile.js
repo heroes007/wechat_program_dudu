@@ -15,7 +15,7 @@ Page({
     const app = getApp()
     const isLogin = app.globalData.isLogin
     
-    if (isLogin && app.globalData.userInfo) {
+    if (isLogin) {
       this.setData({
         isLogin: true,
         hasUserInfo: true,
@@ -29,7 +29,7 @@ Page({
     const app = getApp()
     const isLogin = app.globalData.isLogin
     
-    if (isLogin && app.globalData.userInfo) {
+    if (isLogin) {
       this.setData({
         isLogin: true,
         hasUserInfo: true,

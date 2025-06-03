@@ -13,7 +13,7 @@ class IMManager {
     
     this.chat = null;
     this.isReady = false;
-    this.SDKAppID = 1600083035; // 从chat.js中获取的SDKAppID
+    this.SDKAppID = 1600083035;
     this.secretKey = 'ccbe2a7880675d333a4ae8902fac40d171b7253cbad72fecf0e5ff58194a5ab3';
     this.userID = 'test';
     this.userSig = '';

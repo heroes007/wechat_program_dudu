@@ -12,6 +12,12 @@
       <view class="card-content card">
         <!-- 主图 -->
         <image class="main-photo" src="{{recommendUsers[currentIndex].photos[0]}}" mode="aspectFill"></image>
+
+        <!-- 在线状态 -->
+        <view class="online-status" wx:if="{{recommendUsers[currentIndex].isOnline}}">
+          <view class="online-dot"></view>
+          <text>在线</text>
+        </view>
         
         <!-- 用户信息层 -->
         <view class="user-info-layer">
@@ -22,12 +28,6 @@
               <text class="age">{{formatUserAge(recommendUsers[currentIndex])}}</text>
             </view>
             <view class="profile-text">{{formatUserProfile(recommendUsers[currentIndex])}}</view>
-          </view>
-          
-          <!-- 在线状态 -->
-          <view class="online-status" wx:if="{{recommendUsers[currentIndex].isOnline}}">
-            <view class="online-dot"></view>
-            <text>在线</text>
           </view>
           
           <!-- 标签列表 -->
@@ -48,6 +48,9 @@
   
   <!-- 底部操作按钮 -->
   <view class="action-buttons">
+    <view class="btn-like" bindtap="handleUnlike">
+      <image src="/assets/icons/unlike.png" mode="aspectFit"></image>
+    </view>
     <view class="btn-like" bindtap="handleLike">
       <image src="/assets/icons/like.png" mode="aspectFit"></image>
     </view>

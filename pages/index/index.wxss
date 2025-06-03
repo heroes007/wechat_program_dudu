@@ -160,8 +160,8 @@
 /* 操作按钮 */
 .action-buttons {
   position: absolute;
-  right: 0;
-  bottom: 0;
+  right: 25rpx;
+  bottom: 20rpx;
   width: 100%;
   padding: 40rpx 0;
   justify-content: center;
@@ -172,27 +172,15 @@
 }
 
 .btn-skip, .btn-like {
-  width: 100rpx;
-  height: 100rpx;
-  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
   margin: 20rpx;
 }
 
-.btn-skip {
-  background-color: white;
-}
-
-.btn-like {
-  background-color: var(--primary-color);
-}
-
 .btn-skip image, .btn-like image {
-  width: 50rpx;
-  height: 50rpx;
+  width: 65rpx;
+  height: 65rpx;
 }
 
 /* 无数据提示 */

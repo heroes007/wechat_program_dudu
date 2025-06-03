@@ -117,6 +117,15 @@ Page({
   // 点击喜欢按钮
   handleLike() {
     this.handleSwipe('right')
+    // 跳转至聊天页面
+    wx.navigateTo({
+      url: `/pages/chat/chat?id=${this.data.recommendUsers[this.data.currentIndex].id}`
+    })
+  },
+
+  // 点击不喜欢按钮
+  handleUnlike() {
+    this.handleSwipe('left')
   },
 
   // 点击跳过按钮

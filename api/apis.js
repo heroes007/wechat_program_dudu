@@ -19,7 +19,7 @@ export const UserApi = {
         filePath,
         name: 'file',
         header: {
-          'Authorization': `Bearer ${wx.getStorageSync('token')}`
+          'Authorization': `${wx.getStorageSync('token')}`
         },
         success: (res) => {
           try {

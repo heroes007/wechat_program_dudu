@@ -3,7 +3,7 @@ import { getRandomAvatar } from './util'
 // 模拟推荐用户数据
 export const mockRecommendUsers = [
   {
-    id: 'user1',
+    id: 'test1',
     nickName: '小红',
     avatarUrl: 'https://pic2.zhimg.com/80/v2-70438eebfd91ed041d6786a6745099af_720w.webp',
     gender: 2,
@@ -22,7 +22,7 @@ export const mockRecommendUsers = [
     isOnline: true
   },
   {
-    id: 'user2',
+    id: 'test',
     nickName: '阳阳',
     avatarUrl: 'https://picx.zhimg.com/80/v2-876e3f02c7aefd95228340c42015ecf7_720w.webp',
     gender: 1,
