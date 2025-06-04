@@ -100,7 +100,14 @@ Page({
     // 延时后切换到下一个用户并重置位置
     setTimeout(() => {
       let { currentIndex, recommendUsers } = this.data
-      currentIndex = (currentIndex + 1) % recommendUsers.length
+      // 根据滑动方向决定索引变化
+      if (direction === 'right') {
+        // 右滑(喜欢)时,索引+1
+        currentIndex = (currentIndex + 1) % recommendUsers.length
+      } else {
+        // 左滑(不喜欢)时,索引+2
+        currentIndex = (currentIndex + 2) % recommendUsers.length
+      }
       
       // 重置动画
       this.animation.translateX(0).step({ duration: 0 })

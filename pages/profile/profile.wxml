@@ -1,7 +1,7 @@
 <view class="profile-page">
   <!-- 未登录状态 -->
   <view class="not-login" wx:if="{{!isLogin}}">
-    <view class="banner gradient-bg">
+    <view class="banner">
       <image class="logo" src="/assets/images/logo.png" mode="aspectFit"></image>
       <text class="title">嘟嘟</text>
       <text class="subtitle">遇见未知的自己</text>
@@ -13,7 +13,7 @@
   <view class="logged-in" wx:if="{{isLogin && userInfo}}">
     <!-- 个人信息卡片 -->
     <view class="user-card card">
-      <view class="card-bg gradient-bg"></view>
+      <view class="card-bg"></view>
       
       <view class="user-info">
         <image class="avatar" src="{{userInfo.avatarUrl}}" mode="aspectFill"></image>

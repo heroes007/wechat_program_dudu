@@ -122,11 +122,10 @@ Page({
         phonenumber: this.data.phone,
         validCode: this.data.code
       }).then(res => {
-        console.log(res)
         wx.hideLoading()
         
         // 登录成功，保存token
-        wx.setStorageSync('token', res.token)
+        wx.setStorageSync('token', res.data.token)
         
         // 获取用户信息并设置全局状态
         const app = getApp()

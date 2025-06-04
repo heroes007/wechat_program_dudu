@@ -27,25 +27,26 @@ export const request = (options) => {
       data: options.data,
       header,
       success: (res) => {
+        console.log('res', res)
         wx.hideLoading();
         
         // 假设后端接口返回格式为 { code: number, data: any, message: string }
         if (res.statusCode === 200) {
           // 业务状态判断
           if (res.data.code === 0 || res.data.code === 200) {
-            resolve(res.data.data);
+            resolve(res.data);
           } else if (res.data.code === 401) {
             // token失效，需要重新登录
-            wx.removeStorageSync('token');
-            wx.showToast({
-              title: '登录已过期，请重新登录',
-              icon: 'none'
-            });
-            setTimeout(() => {
-              wx.navigateTo({
-                url: '/pages/login/index'
-              });
-            }, 1500);
+            // wx.removeStorageSync('token');
+            // wx.showToast({
+            //   title: '登录已过期，请重新登录',
+            //   icon: 'none'
+            // });
+            // setTimeout(() => {
+            //   wx.navigateTo({
+            //     url: '/pages/login/index'
+            //   });
+            // }, 1500);
             reject(res.data);
           } else {
             wx.showToast({

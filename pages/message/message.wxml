@@ -3,7 +3,7 @@
     <text class="title">消息</text>
     <view class="total-unread" wx:if="{{totalUnread > 0}}">{{totalUnread}}</view>
   </view> -->
-  
+  `
   <view class="message-list">
     <view wx:if="{{messageList.length === 0}}" class="no-message">
       <text>暂无消息</text>

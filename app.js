@@ -59,12 +59,12 @@ App({
     const logs = wx.getStorageSync('logs') || []
     logs.unshift(Date.now())
     wx.setStorageSync('logs', logs)
-
     // 初始化腾讯云IM SDK
     this.initIM();
 
     // 登录状态检查
     const token = wx.getStorageSync('token')
+    console.log('token', token)
     if (token) {
       this.globalData.isLogin = true
       // 获取用户信息

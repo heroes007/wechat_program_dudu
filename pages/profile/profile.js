@@ -14,6 +14,8 @@ Page({
     // 检查登录状态
     const app = getApp()
     const isLogin = app.globalData.isLogin
+
+    console.log(isLogin, app.globalData.userInfo)
     
     if (isLogin) {
       this.setData({

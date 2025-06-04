@@ -1,7 +1,10 @@
 .profile-page {
   min-height: 100vh;
-  background-color: var(--bg-color);
   padding-bottom: 40rpx;
+  background-image: url('https://dudu-1353584706.cos.ap-nanjing.myqcloud.com/profile_bg.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
 }
 
 /* 未登录样式 */

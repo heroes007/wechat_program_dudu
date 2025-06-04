@@ -95,39 +95,9 @@ Page({
 
     // 获取消息列表
     this.getMessageList();
-
-    // 如果需要获取位置信息
-    this.getUserLocation();
-  },
-  
-  // 获取用户位置
-  getUserLocation() {
-    // 实际应用中，应该从服务器获取对方的位置信息
-    // 这里仅作为示例展示
-    wx.getLocation({
-      type: 'wgs84',
-      success: (res) => {
-        // 这里可以将位置信息发送到服务器，或者与对方位置进行计算
-        console.log('当前位置', res);
-        
-        // 模拟计算距离
-        const distance = '4km';
-        this.setData({
-          'conversation.distance': distance
-        });
-      },
-      fail: (err) => {
-        console.error('获取位置失败', err);
-      }
-    });
   },
   onUnload() {
-    wx.$TUIKit.logout();
     wx.$TUIKit.off(wx.TencentCloudChat.EVENT.SDK_READY, this.onSDKReady, this);
-
-    // 取消事件监听
-    const app = getApp();
-    app.globalEvent.off('im:messageReceived', this.onMessageReceived.bind(this));
   },
   onSDKReady() {
     const TUIKit = this.selectComponent('#TUIKit');
@@ -524,12 +494,7 @@ Page({
     });
   },
   // 返回上一页
-  goBack() {
-    // 添加触觉反馈
-    wx.vibrateShort({
-      type: 'light'
-    });
-    
+  goBack() {    
     // 返回上一页
     wx.navigateBack({
       delta: 1,
