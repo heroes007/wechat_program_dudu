@@ -28,7 +28,9 @@ Page({
 
     // 默认头像
     selfAvatar: '/assets/images/default-avatar.png',
-    otherAvatar: '/assets/images/default-avatar.png'
+    otherAvatar: '/assets/images/default-avatar.png',
+
+    chatGuideVisible: false, // 聊天话题组件显示状态
   },
   onLoad(options) {
     console.log('options', options);
@@ -589,5 +591,18 @@ Page({
         }
       }
     });
+  },
+  // 显示聊天话题组件
+  showChatGuide() {
+    this.setData({
+      chatGuideVisible: true
+    })
+  },
+
+  // 隐藏聊天话题组件
+  hideChatGuide() {
+    this.setData({
+      chatGuideVisible: false
+    })
   }
 });

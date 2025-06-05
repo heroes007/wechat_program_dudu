@@ -37,16 +37,16 @@ export const request = (options) => {
             resolve(res.data);
           } else if (res.data.code === 401) {
             // token失效，需要重新登录
-            // wx.removeStorageSync('token');
-            // wx.showToast({
-            //   title: '登录已过期，请重新登录',
-            //   icon: 'none'
-            // });
-            // setTimeout(() => {
-            //   wx.navigateTo({
-            //     url: '/pages/login/index'
-            //   });
-            // }, 1500);
+            wx.removeStorageSync('token');
+            wx.showToast({
+              title: '登录已过期，请重新登录',
+              icon: 'none'
+            });
+            setTimeout(() => {
+              wx.navigateTo({
+                url: '/pages/login/index'
+              });
+            }, 1500);
             reject(res.data);
           } else {
             wx.showToast({

@@ -70,6 +70,8 @@ App({
       // 获取用户信息
       this.getUserInfo()
     }
+
+    this.initAIModel();
   },
 
   // 初始化IM
@@ -81,6 +83,14 @@ App({
     
     // 监听IM事件
     this.listenIMEvents();
+  },
+
+
+  // 初始化AI模型
+  initAIModel() {
+    wx.cloud.init({
+      env: "cloud1-1gzx3mxd3248aafb",
+    });
   },
   
   // 监听IM事件

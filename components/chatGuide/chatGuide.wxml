@@ -1,0 +1,102 @@
+<view class="chat-guide-container" wx:if="{{visible}}">
+  <view class="chat-guide-mask" bindtap="close"></view>
+  
+  <view class="chat-guide-modal">
+    <!-- Loading 步骤 -->
+    <view class="step-container" wx:if="{{step === 'loading'}}">
+      <view class="header">
+        <text class="title">聊天话题</text>
+        <view class="close-btn" bindtap="close">✕</view>
+      </view>
+      <view class="loading-content">
+        <view class="loading-spinner"></view>
+      </view>
+    </view>
+
+    <!-- 偏好选择步骤 -->
+    <view class="step-container" wx:elif="{{step === 'preference'}}">
+      <view class="header">
+        <text class="title">你更倾向于以下</text>
+        <view class="close-btn" bindtap="close">✕</view>
+      </view>
+      <view class="content">
+        <view class="options">
+          <view 
+            class="option-item {{selectedPreference === item.id ? 'selected' : ''}}"
+            wx:for="{{preferences}}"
+            wx:key="id"
+            data-id="{{item.id}}"
+            bindtap="selectPreference"
+          >
+            {{item.text}}
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 话题内容步骤 -->
+    <view class="step-container" wx:elif="{{step === 'topic'}}">
+      <view class="header">
+        <view class="back-btn" bindtap="goBack">‹</view>
+        <text class="title">约出去玩</text>
+        <view class="close-btn" bindtap="close">✕</view>
+      </view>
+      <view class="content">
+        <view class="topic-content" wx:if="{{!loading}}">
+          <text class="topic-text">{{topicContent}}</text>
+          <view class="next-arrow" bindtap="goToReaction">›</view>
+        </view>
+        <view class="loading-content" wx:else>
+          <view class="loading-spinner"></view>
+        </view>
+        <view class="action-btn" bindtap="switchTopic">换一个</view>
+      </view>
+    </view>
+
+    <!-- 反应选择步骤 -->
+    <view class="step-container" wx:elif="{{step === 'reaction'}}">
+      <view class="header">
+        <view class="back-btn" bindtap="goBack">‹</view>
+        <text class="title">对方的反应是?</text>
+        <view class="close-btn" bindtap="close">✕</view>
+      </view>
+      <view class="content">
+        <view class="options">
+          <view 
+            class="option-item {{selectedReaction === item.id ? 'selected' : ''}}"
+            wx:for="{{reactions}}"
+            wx:key="id"
+            data-id="{{item.id}}"
+            bindtap="selectReaction"
+          >
+            {{item.text}}
+          </view>
+        </view>
+        <view class="pagination">
+          <view class="dot active"></view>
+          <view class="dot"></view>
+        </view>
+        <view class="action-btn" bindtap="switchReaction">换一个</view>
+      </view>
+    </view>
+
+    <!-- 回应内容步骤 -->
+    <view class="step-container" wx:elif="{{step === 'response'}}">
+      <view class="header">
+        <view class="back-btn" bindtap="goBack">‹</view>
+        <text class="title">对方接话，你可以说</text>
+        <view class="close-btn" bindtap="close">✕</view>
+      </view>
+      <view class="content">
+        <view class="response-content" wx:if="{{!loading}}">
+          <text class="response-text">{{responseContent}}</text>
+          <view class="check-icon">✓</view>
+        </view>
+        <view class="loading-content" wx:else>
+          <view class="loading-spinner"></view>
+        </view>
+        <view class="action-btn" bindtap="switchTopic">换一个</view>
+      </view>
+    </view>
+  </view>
+</view>

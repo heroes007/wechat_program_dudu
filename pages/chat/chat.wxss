@@ -686,4 +686,23 @@ page {
 .panel-item text {
   font-size: 12px;
   color: #666;
-} 
+}
+
+/* 聊天话题按钮 */
+.btn-chat-guide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 20rpx;
+  width: 100rpx;
+  height: 65rpx;
+  background: #6c63ff;
+  border-radius: 32rpx;
+  color: white;
+  font-size: 24rpx;
+  font-weight: 500;
+}
+
+.btn-chat-guide:active {
+  transform: scale(0.95);
+}

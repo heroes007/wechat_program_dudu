@@ -1,6 +1,7 @@
 {
   "usingComponents": {
-    "TUIKit": "../../TUIKit/index"
+    "TUIKit": "../../TUIKit/index",
+    "chat-guide": "../../components/chatGuide/chatGuide"
   },
   "navigationStyle": "custom",
   "disableScroll": false,

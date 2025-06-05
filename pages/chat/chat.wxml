@@ -73,6 +73,11 @@
     </block>
   </scroll-view>
 
+  <!-- 测试聊天话题按钮 -->
+  <view class="btn-chat-guide" bindtap="showChatGuide">
+    <text>话题</text>
+  </view>
+
   <!-- 输入区域 -->
   <view class="input-area">
     <view class="tools">
@@ -139,4 +144,6 @@
   <view class="panel emoji-panel" wx:if="{{isEmojiPanelVisible}}">
     <!-- 表情列表 -->
   </view>
+  <!-- 聊天话题组件 -->
+  <chat-guide visible="{{chatGuideVisible}}" bind:close="hideChatGuide"></chat-guide>
 </view>
