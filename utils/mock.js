@@ -40,7 +40,7 @@ export const mockRecommendUsers = [
     isOnline: false
   },
   {
-    id: 'user3',
+    id: '13312341234',
     nickName: '小雨',
     avatarUrl: 'https://picx.zhimg.com/80/v2-c04fc05b41f3ab024098878398b1b095_720w.webp',
     gender: 2,

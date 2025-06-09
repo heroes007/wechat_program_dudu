@@ -1,22 +1,26 @@
-<view class="chat-container" style="height: {{windowHeight}}px;">
+<view class="chat-container">
   <!-- 导航栏 -->
   <view class="chat-header" style="padding-top: {{statusBarHeight}}px;">
     <view class="back-button" bindtap="goBack">
       <image src="/assets/icons/back.png" mode="aspectFit"></image>
     </view>
     <view class="user-info">
-      <view class="user-name">{{conversation.nickname || '对话'}}</view>
-      <view class="user-status">{{conversation.status || '15分钟前'}}{{conversation.lastAction ? '，' + conversation.lastAction : ''}}{{conversation.distance ? '，' + conversation.distance : ''}}</view>
+      <view class="user-name">{{conversation.nickname || '萧萧不吃辣'}}</view>
+      <view class="user-status">{{conversation.status || '13分钟前'}} · {{conversation.location || '朝阳区'}} {{conversation.distance ? '(' + conversation.distance + ')' : '(4km)'}}</view>
     </view>
     <view class="header-actions" bindtap="showMoreActions">
       <text class="more-text">⋯</text>
+    </view>
+    <!-- 验证标识 -->
+    <view class="verify-badge">
+      <image src="/assets/icons/verify.png" mode="aspectFit"></image>
     </view>
   </view>
 
   <!-- 消息列表 -->
   <scroll-view 
     class="message-list" 
-    style="margin-top: {{navBarHeight}}px;"
+    style="height: calc(100vh - {{navBarHeight}}px - {{inputAreaHeight}}px); padding-bottom: {{safeAreaBottom}}px;"
     scroll-y 
     scroll-into-view="{{scrollToMessage}}"
     bindscrolltoupper="loadMoreMessages"
@@ -29,121 +33,177 @@
       <text>加载中...</text>
     </view>
     
+    <!-- 消息列表 -->
     <block wx:for="{{messageList}}" wx:key="ID">
-      <view id="{{item.ID}}" class="message-item {{item.flow === 'out' ? 'self' : 'other'}}">
-        <!-- 显示时间 -->
+      <view id="{{item.ID}}" :class="{{item.flow === 'out' ? 'message-item self' : 'message-item other'}}">
+        <!-- 时间分割线 -->
         <view class="time-divider" wx:if="{{item.isShowTime}}">
-          <text>{{item.timeFormatted}}</text>
+          <text class="time-text">{{item.timeFormatted}}</text>
         </view>
         
-        <!-- 头像和消息气泡 -->
-        <view class="message-content">
-          <image class="avatar" src="{{item.avatar}}" mode="aspectFill"></image>
+        <!-- 消息内容 -->
+        <view class="message-row {{item.flow === 'out' ? 'message-self' : 'message-other'}}">
+          <!-- 头像 -->
+          <view class="avatar-wrapper">
+            <image class="avatar" src="{{item.avatar}}" mode="aspectFill"></image>
+          </view>
           
-          <view class="bubble-wrapper">
-            <view class="nickname" wx:if="{{item.flow === 'in'}}">{{item.nick || '对方'}}</view>
+          <!-- 消息气泡 -->
+          <view class="message-wrapper">
+            <!-- 昵称（仅显示对方的） -->
+            <view class="nickname" wx:if="{{item.flow === 'in' && item.nick}}">{{item.nick}}</view>
             
-            <!-- 根据消息类型显示不同的内容 -->
-            <view class="bubble {{item.flow === 'out' ? 'self-bubble' : 'other-bubble'}}">
+            <!-- 消息气泡 -->
+            <view class="message-bubble {{item.flow === 'out' ? 'bubble-self' : 'bubble-other'}}">
               <!-- 文本消息 -->
-              <view wx:if="{{item.type === 'TIMTextElem'}}" class="text-content">{{item.payload.text}}</view>
+              <text wx:if="{{item.type === 'TIMTextElem'}}" class="message-text">{{item.payload.text}}</text>
               
               <!-- 图片消息 -->
               <image 
                 wx:elif="{{item.type === 'TIMImageElem'}}" 
-                class="image-content" 
+                class="message-image" 
                 src="{{item.payload.imageInfoArray[0].url}}" 
-                mode="widthFix"
+                mode="aspectFill"
                 bindtap="previewImage"
                 data-src="{{item.payload.imageInfoArray[0].url}}"
                 data-message-id="{{item.ID}}"
               ></image>
               
+              <!-- 表情包消息 -->
+              <image 
+                wx:elif="{{item.type === 'TIMFaceElem'}}" 
+                class="message-face" 
+                src="{{item.payload.data}}" 
+                mode="aspectFit"
+              ></image>
+              
               <!-- 其他类型消息 -->
-              <view wx:else class="unsupported-msg">[不支持的消息类型]</view>
+              <view wx:else class="unsupported-msg">
+                <text>[不支持的消息类型]</text>
+              </view>
             </view>
             
             <!-- 发送状态 -->
-            <view wx:if="{{item.status === 'fail'}}" class="send-fail">
+            <view wx:if="{{item.flow === 'out' && item.status === 'fail'}}" class="send-status">
               <image src="/assets/icons/error.png" mode="aspectFit"></image>
             </view>
           </view>
         </view>
       </view>
     </block>
+    
+    <!-- 底部占位 -->
+    <view class="bottom-placeholder" style="height: {{bottomPlaceholderHeight}}px;"></view>
   </scroll-view>
 
-  <!-- 测试聊天话题按钮 -->
-  <view class="btn-chat-guide" bindtap="showChatGuide">
-    <text>话题</text>
-  </view>
-
   <!-- 输入区域 -->
-  <view class="input-area">
-    <view class="tools">
-      <image src="/assets/icons/voice.png" mode="aspectFit" bindtap="toggleVoiceInput"></image>
-    </view>
-    
-    <view class="input-box">
-      <textarea 
-        wx:if="{{!isVoiceInputActive}}"
-        class="text-input" 
-        value="{{inputMessage}}" 
-        bindinput="onInputChange"
-        auto-height
-        cursor-spacing="20"
-        maxlength="500"
-        show-confirm-bar="{{false}}"
-        adjust-position="{{false}}"
-        placeholder="请输入消息"
-      ></textarea>
+  <view 
+    class="input-area" 
+    style="bottom: {{keyboardHeight}}px; padding-bottom: {{safeAreaBottom}}px;"
+  >
+    <!-- 主输入栏 -->
+    <view class="input-row">
+      <!-- 语音按钮 -->
+      <view class="input-tool" bindtap="toggleVoiceInput">
+        <image src="/assets/icons/voice.png" mode="aspectFit"></image>
+      </view>
       
-      <view wx:else class="voice-input" bindtouchstart="startRecording" bindtouchend="stopRecording">
-        <text>按住说话</text>
+      <!-- 输入框 -->
+      <view class="input-wrapper">
+        <textarea 
+          wx:if="{{!isVoiceInputActive}}"
+          class="text-input" 
+          value="{{inputMessage}}" 
+          bindinput="onInputChange"
+          bindfocus="onInputFocus"
+          bindblur="onInputBlur"
+          auto-height
+          cursor-spacing="8"
+          maxlength="500"
+          show-confirm-bar="{{false}}"
+          adjust-position="{{false}}"
+          placeholder="{{inputPlaceholder}}"
+          placeholder-class="input-placeholder"
+        ></textarea>
+        
+        <!-- 语音输入 -->
+        <view wx:else class="voice-input" bindtouchstart="startRecording" bindtouchend="stopRecording">
+          <text class="voice-text">{{isRecording ? '松开结束' : '按住说话'}}</text>
+        </view>
+      </view>
+      
+      <!-- 表情按钮 -->
+      <view class="input-tool" bindtap="toggleEmojiPanel">
+        <image src="/assets/icons/emoji.png" mode="aspectFit"></image>
+      </view>
+      
+      <!-- 更多按钮/发送按钮 -->
+      <view wx:if="{{inputMessage.length > 0}}" class="send-button" bindtap="sendMessage">
+        <text class="send-text">发送</text>
+      </view>
+      <view wx:else class="input-tool" bindtap="toggleMorePanel">
+        <image src="/assets/icons/plus.png" mode="aspectFit"></image>
       </view>
     </view>
     
-    <view class="tools">
-      <image src="/assets/icons/emoji.png" mode="aspectFit" bindtap="toggleEmojiPanel"></image>
-    </view>
-    
-    <view class="tools">
-      <image src="/assets/icons/plus.png" mode="aspectFit" bindtap="toggleMorePanel"></image>
-    </view>
-    
-    <view class="send-button" bindtap="sendMessage" wx:if="{{inputMessage.length > 0}}">
-      <text>发送</text>
+    <!-- 快捷回复区域 -->
+    <view class="quick-reply" wx:if="{{showQuickReply}}">
+      <view class="quick-item" bindtap="selectQuickReply" data-text="聊天话题">
+        <text class="quick-text">聊天话题</text>
+      </view>
+      <view class="quick-item" bindtap="selectQuickReply" data-text="预判未来">
+        <text class="quick-text">预判未来</text>
+      </view>
     </view>
   </view>
 
   <!-- 更多功能面板 -->
-  <view class="panel more-panel" wx:if="{{isMorePanelVisible}}">
-    <view class="panel-item" bindtap="chooseImage">
-      <view class="panel-icon">
-        <image src="/assets/icons/image.png" mode="aspectFit"></image>
+  <view class="panel more-panel" wx:if="{{isMorePanelVisible}}" style="bottom: {{inputAreaHeight + keyboardHeight}}px;">
+    <view class="panel-grid">
+      <view class="panel-item" bindtap="chooseImage">
+        <view class="panel-icon">
+          <image src="/assets/icons/image.png" mode="aspectFit"></image>
+        </view>
+        <text class="panel-text">图片</text>
       </view>
-      <text>图片</text>
-    </view>
-    
-    <view class="panel-item" bindtap="takePhoto">
-      <view class="panel-icon">
-        <image src="/assets/icons/camera.png" mode="aspectFit"></image>
+      
+      <view class="panel-item" bindtap="takePhoto">
+        <view class="panel-icon">
+          <image src="/assets/icons/camera.png" mode="aspectFit"></image>
+        </view>
+        <text class="panel-text">拍摄</text>
       </view>
-      <text>拍摄</text>
-    </view>
-    
-    <view class="panel-item" bindtap="chooseFile">
-      <view class="panel-icon">
-        <image src="/assets/icons/file.png" mode="aspectFit"></image>
+      
+      <view class="panel-item" bindtap="chooseFile">
+        <view class="panel-icon">
+          <image src="/assets/icons/file.png" mode="aspectFit"></image>
+        </view>
+        <text class="panel-text">文件</text>
       </view>
-      <text>文件</text>
+      
+      <view class="panel-item" bindtap="sendLocation">
+        <view class="panel-icon">
+          <image src="/assets/icons/location.png" mode="aspectFit"></image>
+        </view>
+        <text class="panel-text">位置</text>
+      </view>
     </view>
   </view>
 
   <!-- 表情面板 -->
-  <view class="panel emoji-panel" wx:if="{{isEmojiPanelVisible}}">
-    <!-- 表情列表 -->
+  <view class="panel emoji-panel" wx:if="{{isEmojiPanelVisible}}" style="bottom: {{inputAreaHeight + keyboardHeight}}px;">
+    <view class="emoji-grid">
+      <block wx:for="{{emojiList}}" wx:key="index">
+        <view class="emoji-item" bindtap="selectEmoji" data-emoji="{{item}}">
+          <text class="emoji-text">{{item}}</text>
+        </view>
+      </block>
+    </view>
   </view>
+
+  <!-- 遮罩层 -->
+  <view wx:if="{{isMorePanelVisible || isEmojiPanelVisible}}" class="panel-mask" bindtap="hideAllPanels"></view>
+  
   <!-- 聊天话题组件 -->
   <chat-guide visible="{{chatGuideVisible}}" bind:close="hideChatGuide"></chat-guide>
 </view>
