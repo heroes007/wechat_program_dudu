@@ -101,6 +101,17 @@
     class="input-area" 
     style="bottom: {{keyboardHeight}}px; padding-bottom: {{safeAreaBottom}}px;"
   >
+
+    <!-- 快捷回复区域 -->
+    <view class="quick-reply" wx:if="{{showQuickReply}}">
+      <view class="quick-item" bindtap="selectQuickReply" data-text="聊天话题">
+        <text class="quick-text">聊天话题</text>
+      </view>
+      <view class="quick-item" bindtap="selectQuickReply" data-text="预判未来">
+        <text class="quick-text">预判未来</text>
+      </view>
+    </view>
+
     <!-- 主输入栏 -->
     <view class="input-row">
       <!-- 语音按钮 -->
@@ -143,16 +154,6 @@
       </view>
       <view wx:else class="input-tool" bindtap="toggleMorePanel">
         <image src="/assets/icons/plus.png" mode="aspectFit"></image>
-      </view>
-    </view>
-    
-    <!-- 快捷回复区域 -->
-    <view class="quick-reply" wx:if="{{showQuickReply}}">
-      <view class="quick-item" bindtap="selectQuickReply" data-text="聊天话题">
-        <text class="quick-text">聊天话题</text>
-      </view>
-      <view class="quick-item" bindtap="selectQuickReply" data-text="预判未来">
-        <text class="quick-text">预判未来</text>
       </view>
     </view>
   </view>

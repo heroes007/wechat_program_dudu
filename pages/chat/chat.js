@@ -622,9 +622,10 @@ Page({
   // 选择快捷回复
   selectQuickReply(e) {
     const text = e.currentTarget.dataset.text;
-    this.setData({
-      inputMessage: text
-    });
+    this.showChatGuide();
+    // this.setData({
+    //   inputMessage: text
+    // });
   },
 
   // 开始录音

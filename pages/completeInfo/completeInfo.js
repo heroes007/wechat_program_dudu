@@ -1,5 +1,4 @@
 import { UserApi } from '../../api/apis'
-import ossUpload from '../../utils/ossUpload'
 
 Page({
   data: {
@@ -94,7 +93,6 @@ Page({
                 'Authorization': wx.getStorageSync('token')
             },
             success(res) {
-                console.log('上传成功', res.data)
                 const resData = JSON.parse(res.data)
                 if (resData.code === 0 || resData.code === 200) {
                     const avatarList = that.data.avatarList
@@ -266,7 +264,7 @@ Page({
       avatars: avatarList,
       location: selectedLocation,
       birthDate: birthDate,
-      avatar: 'https://dudu-1353584706.cos.ap-nanjing.myqcloud.com/liu.jpg'
+      avatar: avatarList[0] || 'https://dudu-1353584706.cos.ap-nanjing.myqcloud.com/liu.jpg'
     }
     
     UserApi.updateProfile(profileData)
