@@ -14,28 +14,12 @@ export const UserApi = {
   // 完善用户信息
   updateProfile: (data) => http.post('/dudu/register', data),
   // 上传头像
-  uploadAvatar: (filePath) => {
-    return new Promise((resolve, reject) => {
-      wx.uploadFile({
-        url: 'https://api.example.com/user/avatar',
-        filePath,
-        name: 'file',
-        header: {
-          'Authorization': `${wx.getStorageSync('token')}`
-        },
-        success: (res) => {
-          try {
-            const data = JSON.parse(res.data);
-            resolve(data);
-          } catch (e) {
-            reject(e);
-          }
-        },
-        fail: reject
-      });
-    });
-  }
-};
+  uploadAvatar: (file) => http.post('/dudu/system/file/upload', file, {
+    header: {
+      'Content-Type': 'multipart/form-data'
+    }
+  }),
+}
 
 // 内容相关接口
 export const ContentApi = {

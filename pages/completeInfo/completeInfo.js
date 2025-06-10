@@ -74,34 +74,52 @@ Page({
       mediaType: ['image'],
       sourceType: ['album', 'camera'],
       success: (res) => {
-        const tempFiles = res.tempFiles.map(file => file.tempFilePath)
-        this.uploadImages(tempFiles)
+        console.log('res', res)
+        this.uploadImages(res.tempFiles)
       }
     })
   },
 
-  // 上传图片到腾讯云OSS
-  uploadImages(filePaths) {
+  uploadImages(tempFiles) {
+    const that = this
+    console.log('tempFiles', tempFiles)
     wx.showLoading({ title: '上传中...' })
-    
-    ossUpload.uploadFiles(filePaths)
-      .then(urls => {
-        wx.hideLoading()
-        const newAvatarList = [...this.data.avatarList, ...urls]
-        this.setData({ avatarList: newAvatarList })
-        wx.showToast({
-          title: '上传成功',
-          icon: 'success'
+    let completeSign = 0
+    tempFiles.forEach(item => {
+        wx.uploadFile({
+            url: 'http://60.205.120.120:8090/dudu/system/file/upload',
+            filePath: item.tempFilePath,
+            name: 'file',
+            header: {
+                'Authorization': wx.getStorageSync('token')
+            },
+            success(res) {
+                console.log('上传成功', res.data)
+                const resData = JSON.parse(res.data)
+                if (resData.code === 0 || resData.code === 200) {
+                    const avatarList = that.data.avatarList
+                    avatarList.push(resData.msg)
+                    that.setData({ avatarList })
+                    completeSign++
+                    if (completeSign === tempFiles.length) {
+                        wx.hideLoading()
+                        wx.showToast({
+                            title: '上传成功',
+                            icon: 'success'
+                        })
+                    }
+                } else {
+                    wx.showToast({
+                        title: resData.message || '上传失败',
+                        icon: 'none'
+                    })
+                }
+            },
+            fail(err) {
+                console.error('上传失败', err)
+            }
         })
-      })
-      .catch(error => {
-        wx.hideLoading()
-        wx.showToast({
-          title: '上传失败，请重试',
-          icon: 'none'
-        })
-        console.error('图片上传失败:', error)
-      })
+    })
   },
 
   // 删除照片
@@ -247,7 +265,8 @@ Page({
       sex: gender,
       avatars: avatarList,
       location: selectedLocation,
-      birthDate: birthDate
+      birthDate: birthDate,
+      avatar: 'https://dudu-1353584706.cos.ap-nanjing.myqcloud.com/liu.jpg'
     }
     
     UserApi.updateProfile(profileData)
@@ -257,8 +276,8 @@ Page({
           title: '信息完善成功',
           icon: 'success',
           success: () => {
-            UserApi.getUserInfo().then(res => {
-              wx.setStorageSync('userInfo', res.userInfo)
+            UserApi.getUserInfo().then(userInfo => {
+              wx.setStorageSync('userInfo', userInfo)
             })
             setTimeout(() => {
               wx.switchTab({

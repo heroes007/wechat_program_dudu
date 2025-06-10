@@ -127,20 +127,28 @@ Page({
         // 登录成功，保存token
         wx.setStorageSync('token', res.data.token)
         
-        // 获取用户信息并设置全局状态
-        const app = getApp()
-        app.getUserInfo()
-        
         wx.showToast({
           title: '登录成功',
           icon: 'success',
           success: () => {
-            // 延迟返回，确保toast能显示
-            setTimeout(() => {
-              wx.switchTab({
-                url: '/pages/index/index'
-              })
-            }, 1500)
+            // 获取用户信息并设置全局状态
+            const app = getApp()
+            app.getUserInfo().then(userInfo => {
+              console.log('userInfo', userInfo)
+
+              // 延迟返回，确保toast能显示
+              setTimeout(() => {
+                if (!userInfo.avatar) {
+                  wx.navigateTo({
+                    url: '/pages/completeInfo/completeInfo'
+                  })
+                } else {
+                  wx.switchTab({
+                    url: '/pages/index/index'
+                  })
+                }
+              }, 1500)
+            })
           }
         })
       })

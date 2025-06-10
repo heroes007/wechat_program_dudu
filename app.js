@@ -114,38 +114,17 @@ App({
   },
 
   // 获取用户信息
-  getUserInfo() {
-    // 使用API服务获取用户信息
-    UserApi.getUserInfo().then(userInfo => {
-      console.log('userInfo', userInfo)
-      wx.setStorageSync('userInfo', userInfo)
-      
-      // 用户信息获取成功后，尝试登录IM
-      if (userInfo && userInfo.userID) {
-        this.loginIM(userInfo.userID);
-      }
+  async getUserInfo() {
+    const res = await UserApi.getUserInfo();
+    const userInfo = res.user;
+    wx.setStorageSync('userInfo', userInfo)
+    
+    // 用户信息获取成功后，尝试登录IM
+    if (userInfo && userInfo.userID) {
+      this.loginIM(userInfo.userID);
+    }
 
-      // 如果用户没有头像，则跳转至完善信息
-      if (!userInfo.avatar) {
-        wx.navigateTo({
-          url: '/pages/completeInfo/completeInfo'
-        })
-      }
-    }).catch(err => {
-      console.error('获取用户信息失败', err);
-      // 模拟数据兜底
-      // this.globalData.userInfo = {
-      //   nickName: '嘟嘟用户',
-      //   avatarUrl: '/assets/images/default-avatar.png',
-      //   gender: 1,
-      //   age: 25,
-      //   tags: ['旅行', '美食', '电影'],
-      //   occupation: '工程师',
-      //   school: '某某大学',
-      //   location: '北京',
-      //   signature: '这是一个示例签名'
-      // }
-    });
+    return userInfo;
   },
   
   // 登录IM系统
