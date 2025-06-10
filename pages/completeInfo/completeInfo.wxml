@@ -1,0 +1,131 @@
+<view class="complete-info-container">
+  <!-- 步骤指示器 -->
+  <view class="step-indicator">
+    <view class="step-progress">
+      <view class="progress-bar" style="width: {{(step / totalStep) * 100}}%;"></view>
+    </view>
+    <view class="step-text">{{step}}/{{totalStep}}</view>
+  </view>
+
+  <!-- 性别选择页面 -->
+  <view class="step-content" wx:if="{{step === 1}}">
+    <view class="step-header">
+      <view class="step-title">性别</view>
+      <view class="step-subtitle">请选择你的性别，暂时无法修改</view>
+    </view>
+    
+    <view class="gender-options">
+      <view class="gender-option {{gender === 'male' ? 'selected' : ''}}" 
+            bind:tap="selectGender" 
+            data-gender="male">
+        <view class="gender-icon male-icon">♂</view>
+        <view class="gender-text">男生</view>
+      </view>
+      
+      <view class="gender-option {{gender === 'female' ? 'selected' : ''}}" 
+            bind:tap="selectGender" 
+            data-gender="female">
+        <view class="gender-icon female-icon">♀</view>
+        <view class="gender-text">女生</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 照片上传页面 -->
+  <view class="step-content" wx:if="{{step === 2}}">
+    <view class="step-header">
+      <view class="step-title">上传照片</view>
+      <view class="step-subtitle">请上传一些你的照片，让别人更好地了解你</view>
+    </view>
+    
+    <view class="photo-grid">
+      <view class="photo-item" wx:for="{{avatarList}}" wx:key="index">
+        <image src="{{item}}" 
+               class="photo-image" 
+               bind:tap="previewImage" 
+               data-index="{{index}}" 
+               mode="aspectFill" />
+        <view class="photo-delete" bind:tap="deleteImage" data-index="{{index}}">×</view>
+      </view>
+      
+      <view class="photo-add" 
+            wx:if="{{avatarList.length < maxPhotos}}" 
+            bind:tap="chooseImage">
+        <view class="add-icon">+</view>
+        <view class="add-text">添加照片</view>
+      </view>
+    </view>
+    
+    <view class="photo-tip">
+      已上传 {{avatarList.length}}/{{maxPhotos}} 张照片
+    </view>
+  </view>
+
+  <!-- 地点选择页面 -->
+  <view class="step-content" wx:if="{{step === 3}}">
+    <view class="step-header">
+      <view class="step-title">上海静安</view>
+      <view class="step-subtitle">系统将为你推荐同城的朋友</view>
+    </view>
+    
+    <view class="location-grid">
+      <view class="location-item {{selectedLocation === item ? 'selected' : ''}}" 
+            wx:for="{{locationList}}" 
+            wx:key="index"
+            bind:tap="selectLocation" 
+            data-location="{{item}}">
+        {{item}}
+      </view>
+    </view>
+  </view>
+
+  <!-- 年龄选择页面 -->
+  <view class="step-content" wx:if="{{step === 4}}">
+    <view class="step-header">
+      <view class="step-title">生日</view>
+      <view class="step-subtitle">我们不会向别人分享你的年龄</view>
+    </view>
+    
+    <view class="date-picker-container">
+      <view class="date-picker-row">
+        <picker range="{{yearList}}" 
+                value="{{yearList.indexOf(birthYear)}}" 
+                bind:change="onYearChange">
+          <view class="picker-item">
+            {{birthYear || '年份'}}
+          </view>
+        </picker>
+        
+        <picker range="{{monthList}}" 
+                value="{{monthList.indexOf(birthMonth)}}" 
+                bind:change="onMonthChange">
+          <view class="picker-item">
+            {{birthMonth || '月份'}}
+          </view>
+        </picker>
+        
+        <picker range="{{dayList}}" 
+                value="{{dayList.indexOf(birthDay)}}" 
+                bind:change="onDayChange">
+          <view class="picker-item">
+            {{birthDay || '日期'}}
+          </view>
+        </picker>
+      </view>
+      
+      <view class="date-display" wx:if="{{birthYear && birthMonth && birthDay}}">
+        你的生日：{{birthYear}} {{birthMonth}} {{birthDay}}
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部按钮 -->
+  <view class="bottom-actions">
+    <view class="action-buttons">
+      <button class="btn-skip" bind:tap="skipStep">跳过</button>
+      <button class="btn-next" bind:tap="nextStep">
+        {{step === totalStep ? '完成' : '下一步'}}
+      </button>
+    </view>
+  </view>
+</view> 

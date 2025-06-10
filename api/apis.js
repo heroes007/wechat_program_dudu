@@ -11,6 +11,8 @@ export const UserApi = {
   getUserInfo: () => http.get('/dudu/getInfo'),
   // 更新用户信息
   updateUserInfo: (data) => http.put('/dudu/setInfo', data),
+  // 完善用户信息
+  updateProfile: (data) => http.post('/dudu/register', data),
   // 上传头像
   uploadAvatar: (filePath) => {
     return new Promise((resolve, reject) => {

@@ -1,0 +1,293 @@
+import { UserApi } from '../../api/apis'
+import ossUpload from '../../utils/ossUpload'
+
+Page({
+  data: {
+    step: 1, // 当前步骤 1:性别 2:照片 3:地点 4:年龄
+    totalStep: 4,
+    
+    // 性别相关
+    gender: '', // 'male' or 'female'
+    
+    // 照片相关
+    avatarList: [], // 上传的照片列表
+    maxPhotos: 9, // 最大上传照片数量
+    
+    // 地点相关
+    selectedLocation: '',
+    locationList: ['北京', '上海', '广州', '深圳', '杭州', '南京', '成都', '重庆', '西安', '武汉', '苏州', '天津'],
+    
+    // 年龄相关
+    birthYear: '',
+    birthMonth: '',
+    birthDay: '',
+    yearList: [],
+    monthList: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+    dayList: []
+  },
+
+  onLoad() {
+    this.initYearList()
+    this.initDayList()
+  },
+
+  // 初始化年份列表
+  initYearList() {
+    const currentYear = new Date().getFullYear()
+    const yearList = []
+    for (let i = currentYear - 60; i <= currentYear - 18; i++) {
+      yearList.push(i + '年')
+    }
+    this.setData({ yearList })
+  },
+
+  // 初始化日期列表
+  initDayList() {
+    const dayList = []
+    for (let i = 1; i <= 31; i++) {
+      dayList.push(i + '日')
+    }
+    this.setData({ dayList })
+  },
+
+  // 选择性别
+  selectGender(e) {
+    const gender = e.currentTarget.dataset.gender
+    this.setData({ gender })
+  },
+
+  // 选择照片
+  chooseImage() {
+    const { avatarList, maxPhotos } = this.data
+    const remainingCount = maxPhotos - avatarList.length
+    
+    if (remainingCount <= 0) {
+      wx.showToast({
+        title: '最多只能上传9张照片',
+        icon: 'none'
+      })
+      return
+    }
+
+    wx.chooseMedia({
+      count: remainingCount,
+      mediaType: ['image'],
+      sourceType: ['album', 'camera'],
+      success: (res) => {
+        const tempFiles = res.tempFiles.map(file => file.tempFilePath)
+        this.uploadImages(tempFiles)
+      }
+    })
+  },
+
+  // 上传图片到腾讯云OSS
+  uploadImages(filePaths) {
+    wx.showLoading({ title: '上传中...' })
+    
+    ossUpload.uploadFiles(filePaths)
+      .then(urls => {
+        wx.hideLoading()
+        const newAvatarList = [...this.data.avatarList, ...urls]
+        this.setData({ avatarList: newAvatarList })
+        wx.showToast({
+          title: '上传成功',
+          icon: 'success'
+        })
+      })
+      .catch(error => {
+        wx.hideLoading()
+        wx.showToast({
+          title: '上传失败，请重试',
+          icon: 'none'
+        })
+        console.error('图片上传失败:', error)
+      })
+  },
+
+  // 删除照片
+  deleteImage(e) {
+    const index = e.currentTarget.dataset.index
+    const avatarList = this.data.avatarList.filter((_, i) => i !== index)
+    this.setData({ avatarList })
+  },
+
+  // 预览照片
+  previewImage(e) {
+    const index = e.currentTarget.dataset.index
+    const { avatarList } = this.data
+    
+    wx.previewImage({
+      current: avatarList[index],
+      urls: avatarList
+    })
+  },
+
+  // 选择地点
+  selectLocation(e) {
+    const location = e.currentTarget.dataset.location
+    this.setData({ selectedLocation: location })
+  },
+
+  // 年份选择
+  onYearChange(e) {
+    const index = e.detail.value
+    this.setData({
+      birthYear: this.data.yearList[index]
+    })
+  },
+
+  // 月份选择
+  onMonthChange(e) {
+    const index = e.detail.value
+    this.setData({
+      birthMonth: this.data.monthList[index]
+    })
+    // 更新日期列表（考虑不同月份的天数）
+    this.updateDayList(index + 1)
+  },
+
+  // 日期选择
+  onDayChange(e) {
+    const index = e.detail.value
+    this.setData({
+      birthDay: this.data.dayList[index]
+    })
+  },
+
+  // 更新日期列表
+  updateDayList(month) {
+    const year = parseInt(this.data.birthYear)
+    let maxDay = 31
+    
+    if ([4, 6, 9, 11].includes(month)) {
+      maxDay = 30
+    } else if (month === 2) {
+      maxDay = this.isLeapYear(year) ? 29 : 28
+    }
+    
+    const dayList = []
+    for (let i = 1; i <= maxDay; i++) {
+      dayList.push(i + '日')
+    }
+    this.setData({ dayList })
+  },
+
+  // 判断是否为闰年
+  isLeapYear(year) {
+    return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0)
+  },
+
+  // 下一步
+  nextStep() {
+    const { step, gender, avatarList, selectedLocation, birthYear, birthMonth, birthDay } = this.data
+    
+    // 验证当前步骤的必填项
+    if (step === 1 && !gender) {
+      wx.showToast({
+        title: '请选择性别',
+        icon: 'none'
+      })
+      return
+    }
+    
+    if (step === 2 && avatarList.length === 0) {
+      wx.showToast({
+        title: '请至少上传一张照片',
+        icon: 'none'
+      })
+      return
+    }
+    
+    if (step === 3 && !selectedLocation) {
+      wx.showToast({
+        title: '请选择所在地',
+        icon: 'none'
+      })
+      return
+    }
+    
+    if (step === 4 && (!birthYear || !birthMonth || !birthDay)) {
+      wx.showToast({
+        title: '请选择出生日期',
+        icon: 'none'
+      })
+      return
+    }
+    
+    if (step < this.data.totalStep) {
+      this.setData({
+        step: step + 1
+      })
+    } else {
+      // 最后一步，提交数据
+      this.submitInfo()
+    }
+  },
+
+  // 上一步
+  prevStep() {
+    if (this.data.step > 1) {
+      this.setData({
+        step: this.data.step - 1
+      })
+    } else {
+      wx.navigateBack()
+    }
+  },
+
+  // 提交信息
+  submitInfo() {
+    const { gender, avatarList, selectedLocation, birthYear, birthMonth, birthDay } = this.data
+    
+    wx.showLoading({ title: '提交中...' })
+    
+    const birthDate = `${birthYear.replace('年', '')}-${(this.data.monthList.indexOf(birthMonth) + 1).toString().padStart(2, '0')}-${birthDay.replace('日', '').padStart(2, '0')}`
+    
+    const profileData = {
+      sex: gender,
+      avatars: avatarList,
+      location: selectedLocation,
+      birthDate: birthDate
+    }
+    
+    UserApi.updateProfile(profileData)
+      .then(res => {
+        wx.hideLoading()
+        wx.showToast({
+          title: '信息完善成功',
+          icon: 'success',
+          success: () => {
+            UserApi.getUserInfo().then(res => {
+              wx.setStorageSync('userInfo', res.userInfo)
+            })
+            setTimeout(() => {
+              wx.switchTab({
+                url: '/pages/index/index'
+              })
+            }, 1500)
+          }
+        })
+      })
+      .catch(error => {
+        wx.hideLoading()
+        wx.showToast({
+          title: '提交失败，请重试',
+          icon: 'none'
+        })
+        console.error('提交信息失败:', error)
+      })
+  },
+
+  // 跳过当前步骤
+  skipStep() {
+    if (this.data.step < this.data.totalStep) {
+      this.setData({
+        step: this.data.step + 1
+      })
+    } else {
+      wx.switchTab({
+        url: '/pages/index/index'
+      })
+    }
+  }
+})

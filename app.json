@@ -6,7 +6,8 @@
     "pages/chat/chat",
     "pages/register/register",
     "pages/userDetail/userDetail",
-    "pages/editProfile/editProfile"
+    "pages/editProfile/editProfile",
+    "pages/completeInfo/completeInfo"
   ],
   "window": {
     "backgroundTextStyle": "light",

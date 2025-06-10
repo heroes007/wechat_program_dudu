@@ -118,11 +118,18 @@ App({
     // 使用API服务获取用户信息
     UserApi.getUserInfo().then(userInfo => {
       console.log('userInfo', userInfo)
-      this.globalData.userInfo = userInfo;
+      wx.setStorageSync('userInfo', userInfo)
       
       // 用户信息获取成功后，尝试登录IM
       if (userInfo && userInfo.userID) {
         this.loginIM(userInfo.userID);
+      }
+
+      // 如果用户没有头像，则跳转至完善信息
+      if (!userInfo.avatar) {
+        wx.navigateTo({
+          url: '/pages/completeInfo/completeInfo'
+        })
       }
     }).catch(err => {
       console.error('获取用户信息失败', err);

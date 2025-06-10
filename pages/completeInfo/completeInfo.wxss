@@ -1,0 +1,280 @@
+.complete-info-container {
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  display: flex;
+  flex-direction: column;
+  padding: 0 32rpx;
+}
+
+/* 步骤指示器 */
+.step-indicator {
+  padding: 40rpx 0 60rpx;
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+}
+
+.step-progress {
+  flex: 1;
+  height: 8rpx;
+  background-color: #e9ecef;
+  border-radius: 4rpx;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  border-radius: 4rpx;
+  transition: width 0.3s ease;
+}
+
+.step-text {
+  font-size: 28rpx;
+  color: #667eea;
+  font-weight: 600;
+}
+
+/* 步骤内容 */
+.step-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.step-header {
+  margin-bottom: 80rpx;
+  text-align: center;
+}
+
+.step-title {
+  font-size: 48rpx;
+  font-weight: 700;
+  color: #212529;
+  margin-bottom: 16rpx;
+}
+
+.step-subtitle {
+  font-size: 28rpx;
+  color: #6c757d;
+  line-height: 1.6;
+}
+
+/* 性别选择样式 */
+.gender-options {
+  display: flex;
+  gap: 40rpx;
+  padding: 0 40rpx;
+}
+
+.gender-option {
+  flex: 1;
+  background-color: #ffffff;
+  border-radius: 24rpx;
+  padding: 60rpx 40rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24rpx;
+  border: 4rpx solid transparent;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.gender-option.selected {
+  border-color: #667eea;
+  background-color: #f8f9ff;
+}
+
+.gender-icon {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 64rpx;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+.male-icon {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.female-icon {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.gender-text {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #212529;
+}
+
+/* 照片上传样式 */
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20rpx;
+  margin-bottom: 40rpx;
+}
+
+.photo-item {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 16rpx;
+  overflow: hidden;
+}
+
+.photo-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 16rpx;
+}
+
+.photo-delete {
+  position: absolute;
+  top: 8rpx;
+  right: 8rpx;
+  width: 40rpx;
+  height: 40rpx;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+.photo-add {
+  aspect-ratio: 1;
+  background-color: #ffffff;
+  border: 2rpx dashed #ced4da;
+  border-radius: 16rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  color: #6c757d;
+}
+
+.add-icon {
+  font-size: 48rpx;
+  font-weight: 300;
+}
+
+.add-text {
+  font-size: 24rpx;
+}
+
+.photo-tip {
+  text-align: center;
+  font-size: 24rpx;
+  color: #6c757d;
+}
+
+/* 地点选择样式 */
+.location-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20rpx;
+  margin-bottom: 40rpx;
+}
+
+.location-item {
+  background-color: #ffffff;
+  border: 2rpx solid #e9ecef;
+  border-radius: 16rpx;
+  padding: 32rpx 20rpx;
+  text-align: center;
+  font-size: 28rpx;
+  color: #495057;
+  transition: all 0.3s ease;
+}
+
+.location-item.selected {
+  border-color: #667eea;
+  background-color: #f8f9ff;
+  color: #667eea;
+  font-weight: 600;
+}
+
+/* 年龄选择样式 */
+.date-picker-container {
+  padding: 0 40rpx;
+}
+
+.date-picker-row {
+  display: flex;
+  gap: 20rpx;
+  margin-bottom: 60rpx;
+}
+
+.picker-item {
+  flex: 1;
+  background-color: #ffffff;
+  border: 2rpx solid #e9ecef;
+  border-radius: 16rpx;
+  padding: 32rpx 20rpx;
+  text-align: center;
+  font-size: 28rpx;
+  color: #495057;
+}
+
+.date-display {
+  text-align: center;
+  font-size: 32rpx;
+  color: #667eea;
+  font-weight: 600;
+  padding: 40rpx;
+  background-color: #f8f9ff;
+  border-radius: 16rpx;
+}
+
+/* 底部按钮样式 */
+.bottom-actions {
+  padding: 40rpx 0 80rpx;
+  margin-top: auto;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 24rpx;
+}
+
+.btn-skip {
+  flex: 0 0 160rpx;
+  background-color: transparent;
+  color: #6c757d;
+  border: 2rpx solid #dee2e6;
+  border-radius: 40rpx;
+  font-size: 28rpx;
+  height: 88rpx;
+  line-height: 88rpx;
+  padding: 0;
+}
+
+.btn-next {
+  flex: 1;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 40rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+  height: 88rpx;
+  line-height: 88rpx;
+  padding: 0;
+}
+
+.btn-next::after {
+  border: none;
+}
+
+.btn-skip::after {
+  border: none;
+} 

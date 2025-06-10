@@ -129,7 +129,6 @@ Page({
         
         // 获取用户信息并设置全局状态
         const app = getApp()
-        app.globalData.isLogin = true
         app.getUserInfo()
         
         wx.showToast({

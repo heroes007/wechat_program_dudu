@@ -12,30 +12,32 @@ Page({
 
   onLoad() {
     // 检查登录状态
-    const app = getApp()
-    const isLogin = app.globalData.isLogin
+    const userInfo = wx.getStorageSync('userInfo')
 
-    console.log(isLogin, app.globalData.userInfo)
+    this.setData({
+      userInfo: userInfo
+    })
+
+    console.log('userInfo', userInfo)
     
-    if (isLogin) {
+    if (userInfo) {
       this.setData({
         isLogin: true,
-        hasUserInfo: true,
-        userInfo: app.globalData.userInfo
+        hasUserInfo: true
       })
     }
   },
+
   
   onShow() {
     // 每次进入页面都检查一次登录状态
-    const app = getApp()
-    const isLogin = app.globalData.isLogin
+    const userInfo = wx.getStorageSync('userInfo')
     
-    if (isLogin) {
+    if (userInfo) {
       this.setData({
         isLogin: true,
         hasUserInfo: true,
-        userInfo: app.globalData.userInfo
+        userInfo: userInfo
       })
     }
   },
@@ -56,10 +58,7 @@ Page({
       success: (res) => {
         if (res.confirm) {
           // 清除登录状态
-          const app = getApp()
-          app.globalData.isLogin = false
-          app.globalData.userInfo = null
-          
+          wx.removeStorageSync('userInfo')
           // 清除存储的token
           wx.removeStorageSync('token')
           
