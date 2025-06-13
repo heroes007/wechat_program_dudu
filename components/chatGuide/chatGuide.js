@@ -3,6 +3,10 @@ Component({
     visible: {
       type: Boolean,
       value: false
+    },
+    messageList: {
+      type: Array,
+      value: []
     }
   },
 
@@ -22,6 +26,11 @@ Component({
     selectedReaction: '',
     responseContent: '',
     currentReactionIndex: 0,
+    aiResponses: {
+      initialMessage: '',
+      positiveResponse: '',
+      negativeResponse: ''
+    },
     // 话题内容库
     topicLibrary: {
       'close': [
@@ -68,18 +77,20 @@ Component({
 
   methods: {
     // 初始化AI模型
-    async initAIModel() {
+    async initAIModel() {        // AI处理完成，进入下一步
       try {
         this.setData({ loading: true, step: 'loading' });
         
         const model = wx.cloud.extend.AI.createModel("deepseek");
 
-        const chatRecord = {
-          messages: [
-            { role: 'user', content: '你好，我是小明，很高兴认识你。' },
-            { role: 'assistant', content: '你好，我是小红，很高兴认识你。' }
-          ]
-        };
+        const chatRecord = this.data.messageList.map(item => {
+          return {
+            text: item.payload.text,
+            flow: item.flow
+          }
+        });
+
+        console.log('chatRecord', chatRecord)
 
         const otherInfo = {
           personality: '这位猫系女孩需要"星空下的向日葵"式爱情——既有温暖稳定的根基，又不失浪漫想象。相处时要像鉴赏艺术品般细致（留意她照片构图偏好的对称美学），用共同兴趣搭建情感脚手架，重要决策遵循"30秒法则"（给她留足反应时间）。需规避目的性过强的追求，转而通过持续性价值展示（端游战绩/旅游攻略专业度）赢得青睐。记住她雨夜凝望摩天轮的背影密码：真正打动她的不是999朵玫瑰，而是能看懂玻璃上那滴水珠折射出的彩虹的人。',
@@ -90,28 +101,26 @@ Component({
 
         const systemPrompt =
         `
-          现在要求你：参考【对方性格】和【我的性格】、【聊天记录】、参考现在的时间点。为“我”设计一个对话，100字以内。要求：
-          1、以【目的】为目的，为“我”设计一个对话内容使用[]包裹。
-          2、预测我发送消息之后，对方如果接受使用[]包裹接受原因。
-          3、预测我发送消息之后，对方如果拒绝使用[]包裹拒绝原因。
-          4、如果对方接受，则再为我设计一段话，100字以内，令对方对我更有兴趣，使用[]包裹。
-          5、如果对方不接受，则再为我设计一段话，100字以内，体面地结束话题，使用[]包裹。
-          以上 5 段话，分为 5 段进行回答。
+          现在要求你：参考【对方性格】和【我的性格】、【聊天记录】、参考现在的时间点。为"我"设计一个对话，100字以内。要求：
+          1、【目的】为聊天目的，以【聊天记录】为主要参考信息，【对方性格】和【我的性格】为辅助参考信息，为"我"设计一个对话内容使用[]包裹。
+          2、如果对方接受，则再为我设计一段话，100字以内，令对方对我更有兴趣，使用[]包裹。
+          3、如果对方不接受，则再为我设计一段话，100字以内，体面地结束话题，使用[]包裹。
+          以上 3 段话，分为 3 段进行回答。
 
-          示例：
-          [小红，这周末天气不错，我知道一个很适合拍照的地方，那里的建筑风格和光影效果都很美，想邀请你一起去探索，顺便可以聊聊你对摄影的见解。]
-
-          [她可能对这个拍照地点感兴趣，且你提到了她对摄影的见解，这符合她喜欢细致鉴赏和共同兴趣搭建情感的特点。]
-          
-          [她可能已经有其他安排，或者觉得邀请有些突然，需要更多时间来考虑。]
-
-          [如果你愿意，我们可以一起规划这次的小旅行，我已经准备了一些拍摄灵感，相信你会有很多独特的想法加入。]
-
-          [如果周末不方便也没关系，我们可以找其他时间再约，或者你有什么特别想去的地方，也可以告诉我。]
+          【目的】为约出去玩时，参考【地点】信息，提供约出去玩的具体地点名称，比如店铺名称
+          【聊天记录】是一段json，格式为：text和flow，text是消息内容，flow是消息方向。
+          [
+            {
+              "text": "你好，我是小明，很高兴认识你。",
+              "flow": "out"
+            }
+          ]
         `;
+        // 【目的】：${this.data.selectedPreference};
 
         const userInput = `
-          【目的】：约对方出去玩;
+          【目的】：'约出去玩';
+          【地点】：'北京市朝阳区三里屯附近'；
           【对方性格】：${otherInfo.personality};
           【我的性格】：${otherInfo.myPersonality};
           【聊天记录】：${JSON.stringify(otherInfo.chatRecord)};
@@ -134,14 +143,22 @@ Component({
           result += str;
         }
 
-        console.log(result);
-        
-        // AI处理完成，进入下一步
+        // 解析AI返回的结果
+        const responses = result.split('\n').filter(line => line.trim().startsWith('[') && line.trim().endsWith(']'));
+        const parsedResponses = responses.map(response => response.trim().slice(1, -1));
+
+        // 将解析后的结果存储到data中
         this.setData({ 
           loading: false, 
-          step: 'preference' 
+          step: 'preference',
+          aiResponses: {
+            initialMessage: parsedResponses[0] || '',
+            positiveResponse: parsedResponses[1] || '',
+            negativeResponse: parsedResponses[2] || ''
+          }
         });
-        
+
+        console.log('Parsed AI responses:', this.data.aiResponses);
       } catch (error) {
         console.error('AI模型初始化失败:', error);
         wx.showToast({

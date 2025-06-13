@@ -7,8 +7,29 @@
     <view class="step-text">{{step}}/{{totalStep}}</view>
   </view>
 
-  <!-- 性别选择页面 -->
+  <!-- 昵称设置页面 -->
   <view class="step-content" wx:if="{{step === 1}}">
+    <view class="step-header">
+      <view class="step-title">设置昵称</view>
+      <view class="step-subtitle">起一个好听的昵称，让大家认识你</view>
+    </view>
+    
+    <view class="nickname-container">
+      <view class="input-wrapper">
+        <input 
+          class="nickname-input" 
+          placeholder="请输入你的昵称" 
+          value="{{nickName}}"
+          bind:input="handleNicknameInput"
+          maxlength="20"
+          focus="true" />
+      </view>
+      <view class="nickname-tip">昵称长度为1-20个字符</view>
+    </view>
+  </view>
+
+  <!-- 性别选择页面 -->
+  <view class="step-content" wx:if="{{step === 2}}">
     <view class="step-header">
       <view class="step-title">性别</view>
       <view class="step-subtitle">请选择你的性别，暂时无法修改</view>
@@ -32,7 +53,7 @@
   </view>
 
   <!-- 照片上传页面 -->
-  <view class="step-content" wx:if="{{step === 2}}">
+  <view class="step-content" wx:if="{{step === 3}}">
     <view class="step-header">
       <view class="step-title">上传照片</view>
       <view class="step-subtitle">请上传一些你的照片，让别人更好地了解你</view>
@@ -62,7 +83,7 @@
   </view>
 
   <!-- 地点选择页面 -->
-  <view class="step-content" wx:if="{{step === 3}}">
+  <view class="step-content" wx:if="{{step === 4}}">
     <view class="step-header">
       <view class="step-title">上海静安</view>
       <view class="step-subtitle">系统将为你推荐同城的朋友</view>
@@ -80,7 +101,7 @@
   </view>
 
   <!-- 年龄选择页面 -->
-  <view class="step-content" wx:if="{{step === 4}}">
+  <view class="step-content" wx:if="{{step === 5}}">
     <view class="step-header">
       <view class="step-title">生日</view>
       <view class="step-subtitle">我们不会向别人分享你的年龄</view>

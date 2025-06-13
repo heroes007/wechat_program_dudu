@@ -13,6 +13,7 @@ Page({
   onLoad() {
     // 检查登录状态
     const userInfo = wx.getStorageSync('userInfo')
+    console.log('userInfo', userInfo)
 
     this.setData({
       userInfo: userInfo

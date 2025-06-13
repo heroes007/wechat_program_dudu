@@ -60,6 +60,45 @@
   line-height: 1.6;
 }
 
+/* 昵称设置样式 */
+.nickname-container {
+  padding: 0 40rpx;
+}
+
+.input-wrapper {
+  background-color: #ffffff;
+  border-radius: 20rpx;
+  padding: 32rpx 40rpx;
+  margin-bottom: 24rpx;
+  border: 2rpx solid #e9ecef;
+  transition: border-color 0.3s ease;
+}
+
+.input-wrapper:focus-within {
+  border-color: #667eea;
+  box-shadow: 0 0 0 4rpx rgba(102, 126, 234, 0.1);
+}
+
+.nickname-input {
+  width: 100%;
+  font-size: 32rpx;
+  color: #212529;
+  background: transparent;
+  border: none;
+  outline: none;
+}
+
+.nickname-input::placeholder {
+  color: #adb5bd;
+}
+
+.nickname-tip {
+  text-align: center;
+  font-size: 24rpx;
+  color: #6c757d;
+  padding: 0 20rpx;
+}
+
 /* 性别选择样式 */
 .gender-options {
   display: flex;

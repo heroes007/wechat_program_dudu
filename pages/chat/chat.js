@@ -284,25 +284,28 @@ Page({
       const { data: result } = await IMManager.getMessageList(this.data.conversationID, 20);
       const { messageList, isCompleted } = result;
 
-      console.log('getMessageList messageList', messageList);
-
       // 处理消息，添加UI需要的属性
       const formattedMessages = this.formatMessages(messageList);
+      console.log('formattedMessages------', formattedMessages)
 
       this.setData({
         messageList: formattedMessages,
         isLoading: false
+      }, () => {
+        // 在消息列表更新后，延迟设置scrollToMessage
+        setTimeout(() => {
+          if (formattedMessages.length > 0) {
+            const lastMessage = formattedMessages[formattedMessages.length - 1];
+            this.setData({
+              scrollToMessage: `msg-${lastMessage.ID}`
+            });
+          }
+        }, 100);
       });
-
-      // 滚动到最新消息
-      if (formattedMessages.length > 0) {
-        this.setData({
-          scrollToMessage: formattedMessages[formattedMessages.length - 1].ID
-        });
-      }
 
       // 设置消息已读
       IMManager.setMessageRead(this.data.conversationID);
+
     } catch (error) {
       console.error('获取消息列表失败', error);
       this.setData({ isLoading: false });
@@ -394,8 +397,15 @@ Page({
     const updatedMessageList = [...this.data.messageList, ...formattedMessages];
 
     this.setData({
-      messageList: updatedMessageList,
-      scrollToMessage: formattedMessages[formattedMessages.length - 1].ID
+      messageList: updatedMessageList
+    }, () => {
+      // 在消息列表更新后，延迟设置scrollToMessage
+      setTimeout(() => {
+        const lastMessage = formattedMessages[formattedMessages.length - 1];
+        this.setData({
+          scrollToMessage: `msg-${lastMessage.ID}`
+        });
+      }, 100);
     });
   },
   // 格式化消息时间显示
@@ -439,20 +449,25 @@ Page({
       const to = conversationType === 'C2C' ? receiverID : this.data.conversationID.replace('GROUP_', '');
 
       // 发送消息
-      const result = await IMManager.sendTextMessage(to, inputMessage, conversationType);
+      const result = await IMManager.sendTextMessage(to, inputMessage, conversationType, (message) => {
+        this.addMessagesToList([message]);
 
-      // 发送成功后，将消息添加到消息列表
-      if (result && result.data && result.data.message) {
-        this.addMessagesToList([result.data.message]);
-      }
+        // 重置输入框
+        this.setData({
+          inputMessage: ''
+        });
 
-      // 重置输入框
-      this.setData({
-        inputMessage: ''
+        // 隐藏所有面板
+        this.hideAllPanels();
       });
 
-      // 隐藏所有面板
-      this.hideAllPanels();
+      // 发送失败
+      if (result.code !== 0) {
+        wx.showToast({
+          title: '发送失败',
+          icon: 'error'
+        });
+      }
 
       console.log('消息发送成功', result);
     } catch (error) {
@@ -564,7 +579,7 @@ Page({
       if (this.data.messageList.length > 0) {
         const lastMessage = this.data.messageList[this.data.messageList.length - 1];
         this.setData({
-          scrollToMessage: lastMessage.ID
+          scrollToMessage: `msg-${lastMessage.ID}`
         });
       }
     }, 300);

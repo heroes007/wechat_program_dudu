@@ -16,7 +16,7 @@
       <view class="card-bg"></view>
       
       <view class="user-info">
-        <image class="avatar" src="{{userInfo.avatarUrl}}" mode="aspectFill"></image>
+        <image class="avatar" src="{{userInfo.avatar}}" mode="aspectFill"></image>
         <view class="user-detail">
           <text class="nickname">{{userInfo.nickName}}</text>
           <view class="tag" wx:if="{{userInfo.gender}}">

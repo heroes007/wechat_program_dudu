@@ -20,13 +20,15 @@
   <!-- 消息列表 -->
   <scroll-view 
     class="message-list" 
-    style="height: calc(100vh - {{navBarHeight}}px - {{inputAreaHeight}}px); padding-bottom: {{safeAreaBottom}}px;"
+    style="padding-bottom: {{safeAreaBottom + 100}}px;"
     scroll-y 
     scroll-into-view="{{scrollToMessage}}"
     bindscrolltoupper="loadMoreMessages"
-    scroll-with-animation
-    enhanced
+    scroll-with-animation="{{true}}"
+    enhanced="{{true}}"
     bounces="{{false}}"
+    scroll-anchoring="{{true}}"
+    show-scrollbar="{{false}}"
   >
     <view class="load-more" wx:if="{{isLoading}}">
       <view class="loading-icon"></view>
@@ -35,7 +37,7 @@
     
     <!-- 消息列表 -->
     <block wx:for="{{messageList}}" wx:key="ID">
-      <view id="{{item.ID}}" :class="{{item.flow === 'out' ? 'message-item self' : 'message-item other'}}">
+      <view id="msg-{{item.ID}}" :class="{{item.flow === 'out' ? 'message-item self' : 'message-item other'}}">
         <!-- 时间分割线 -->
         <view class="time-divider" wx:if="{{item.isShowTime}}">
           <text class="time-text">{{item.timeFormatted}}</text>
@@ -50,9 +52,6 @@
           
           <!-- 消息气泡 -->
           <view class="message-wrapper">
-            <!-- 昵称（仅显示对方的） -->
-            <view class="nickname" wx:if="{{item.flow === 'in' && item.nick}}">{{item.nick}}</view>
-            
             <!-- 消息气泡 -->
             <view class="message-bubble {{item.flow === 'out' ? 'bubble-self' : 'bubble-other'}}">
               <!-- 文本消息 -->
@@ -206,5 +205,5 @@
   <view wx:if="{{isMorePanelVisible || isEmojiPanelVisible}}" class="panel-mask" bindtap="hideAllPanels"></view>
   
   <!-- 聊天话题组件 -->
-  <chat-guide visible="{{chatGuideVisible}}" bind:close="hideChatGuide"></chat-guide>
+  <chat-guide visible="{{chatGuideVisible}}" bind:close="hideChatGuide" messageList="{{messageList}}"></chat-guide>
 </view>

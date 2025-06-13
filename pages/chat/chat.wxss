@@ -316,7 +316,6 @@ page {
   align-items: center;
   padding: 8px 16px;
   height: 44px;
-  box-sizing: border-box;
 }
 
 .back-button {
@@ -386,7 +385,7 @@ page {
 .message-list {
   flex: 1;
   padding: 0;
-  margin-top: 44px;
+  margin-top: 100px;
   box-sizing: border-box;
   overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
@@ -438,7 +437,7 @@ page {
 
 .message-row {
   display: flex;
-  padding: 0 16px;
+  padding: 8px 16px;
   align-items: flex-start;
 }
 
@@ -498,7 +497,6 @@ page {
 .bubble-self {
   background-color: #95ec69;
   color: #000000;
-  border-bottom-right-radius: 4px;
 }
 
 .bubble-other {

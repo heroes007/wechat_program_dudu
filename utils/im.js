@@ -10,12 +10,14 @@ class IMManager {
   constructor() {
     if (instance) return instance;
     instance = this;
+
+    const userInfo = wx.getStorageSync('userInfo');
     
     this.chat = null;
     this.isReady = false;
     this.SDKAppID = 1600083035;
     this.secretKey = 'ccbe2a7880675d333a4ae8902fac40d171b7253cbad72fecf0e5ff58194a5ab3';
-    this.userID = 'test';
+    this.userID = userInfo.phonenumber;
     this.userSig = '';
   }
 
@@ -93,7 +95,7 @@ class IMManager {
   }
 
   // 发送文本消息
-  sendTextMessage(to, text, conversationType = 'C2C') {
+  sendTextMessage(to, text, conversationType = 'C2C', fn) {
     console.log('发送文本消息', to, text, conversationType);
 
     const toId = to.replace('C2C', '');
@@ -103,6 +105,8 @@ class IMManager {
       conversationType,
       payload: { text }
     });
+
+    fn && fn(message);
     
     console.log('message', message);
 

@@ -2,8 +2,11 @@ import { UserApi } from '../../api/apis'
 
 Page({
   data: {
-    step: 1, // 当前步骤 1:性别 2:照片 3:地点 4:年龄
-    totalStep: 4,
+    step: 1, // 当前步骤 1:昵称 2:性别 3:照片 4:地点 5:年龄
+    totalStep: 5,
+    
+    // 昵称相关
+    nickName: '', // 用户昵称
     
     // 性别相关
     gender: '', // 'male' or 'female'
@@ -47,6 +50,12 @@ Page({
       dayList.push(i + '日')
     }
     this.setData({ dayList })
+  },
+
+  // 处理昵称输入
+  handleNicknameInput(e) {
+    const nickName = e.detail.value.trim()
+    this.setData({ nickName })
   },
 
   // 选择性别
@@ -198,7 +207,15 @@ Page({
     const { step, gender, avatarList, selectedLocation, birthYear, birthMonth, birthDay } = this.data
     
     // 验证当前步骤的必填项
-    if (step === 1 && !gender) {
+    if (step === 1 && !this.data.nickName) {
+      wx.showToast({
+        title: '请输入昵称',
+        icon: 'none'
+      })
+      return
+    }
+    
+    if (step === 2 && !gender) {
       wx.showToast({
         title: '请选择性别',
         icon: 'none'
@@ -206,7 +223,7 @@ Page({
       return
     }
     
-    if (step === 2 && avatarList.length === 0) {
+    if (step === 3 && avatarList.length === 0) {
       wx.showToast({
         title: '请至少上传一张照片',
         icon: 'none'
@@ -214,7 +231,7 @@ Page({
       return
     }
     
-    if (step === 3 && !selectedLocation) {
+    if (step === 4 && !selectedLocation) {
       wx.showToast({
         title: '请选择所在地',
         icon: 'none'
@@ -222,7 +239,7 @@ Page({
       return
     }
     
-    if (step === 4 && (!birthYear || !birthMonth || !birthDay)) {
+    if (step === 5 && (!birthYear || !birthMonth || !birthDay)) {
       wx.showToast({
         title: '请选择出生日期',
         icon: 'none'
@@ -253,14 +270,15 @@ Page({
 
   // 提交信息
   submitInfo() {
-    const { gender, avatarList, selectedLocation, birthYear, birthMonth, birthDay } = this.data
+    const { nickName, gender, avatarList, selectedLocation, birthYear, birthMonth, birthDay } = this.data
     
     wx.showLoading({ title: '提交中...' })
     
     const birthDate = `${birthYear.replace('年', '')}-${(this.data.monthList.indexOf(birthMonth) + 1).toString().padStart(2, '0')}-${birthDay.replace('日', '').padStart(2, '0')}`
     
     const profileData = {
-      sex: gender,
+      nickName: nickName,
+      sex: gender === 'male' ? 0 : 1,
       avatars: avatarList,
       location: selectedLocation,
       birthDate: birthDate,
