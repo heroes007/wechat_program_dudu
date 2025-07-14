@@ -1,7 +1,15 @@
-// IM工具类
-import TencentCloudChat from '@tencentcloud/chat';
-import TIMUploadPlugin from 'tim-upload-plugin';
-import LibGenerateTestUserSig from './lib-generate-test-usersig-es.min.js';
+// IM工具类 - 支持延迟加载
+let TencentCloudChat = null;
+let TIMUploadPlugin = null;
+
+// 动态加载第三方库
+function loadIMSDK() {
+  if (!TencentCloudChat) {
+    TencentCloudChat = require('@tencentcloud/chat');
+    TIMUploadPlugin = require('tim-upload-plugin');
+  }
+  return { TencentCloudChat, TIMUploadPlugin };
+}
 
 // 单例模式
 let instance = null;
@@ -17,8 +25,32 @@ class IMManager {
     this.isReady = false;
     this.SDKAppID = 1600083035;
     this.secretKey = 'ccbe2a7880675d333a4ae8902fac40d171b7253cbad72fecf0e5ff58194a5ab3';
-    this.userID = userInfo.phonenumber;
+    this.userID = userInfo ? userInfo.phonenumber : '';
     this.userSig = '';
+    this.eventListeners = {};
+  }
+
+  // 事件监听器
+  on(event, callback) {
+    if (!this.eventListeners[event]) {
+      this.eventListeners[event] = [];
+    }
+    this.eventListeners[event].push(callback);
+  }
+
+  off(event, callback) {
+    if (!this.eventListeners[event]) return;
+    if (callback) {
+      this.eventListeners[event] = this.eventListeners[event].filter(cb => cb !== callback);
+    } else {
+      this.eventListeners[event] = [];
+    }
+  }
+
+  emit(event, ...args) {
+    if (this.eventListeners[event]) {
+      this.eventListeners[event].forEach(callback => callback(...args));
+    }
   }
 
   // 初始化IM SDK
@@ -26,27 +58,26 @@ class IMManager {
     console.log('初始化IM SDK');
     if (this.chat) return this.chat;
 
-    const options = {
-      SDKAppID: this.SDKAppID
-    };
+    try {
+      const { TencentCloudChat, TIMUploadPlugin } = loadIMSDK();
+      
+      const options = {
+        SDKAppID: this.SDKAppID
+      };
 
-    this.chat = TencentCloudChat.create(options);
-    this.chat.setLogLevel(0); // 开发阶段使用，日志量较多
-    this.chat.registerPlugin({'tim-upload-plugin': TIMUploadPlugin});
-    
-    // 监听事件
-    this._registerListeners();
+      this.chat = TencentCloudChat.create(options);
+      this.chat.setLogLevel(0); // 开发阶段使用，日志量较多
+      this.chat.registerPlugin({'tim-upload-plugin': TIMUploadPlugin});
+      
+      // 监听事件
+      this._registerListeners();
 
-    console.log('初始化IM SDK', this.chat);
-
-    const { userSig, SDKAppID } = genTestUserSig({
-      SDKAppID: this.SDKAppID,
-      secretKey: this.secretKey,
-      userID: this.userID
-    });
-
-    this.login(this.userID, userSig);
-    return this.chat;
+      console.log('初始化IM SDK成功', this.chat);
+      return this.chat;
+    } catch (error) {
+      console.error('初始化IM SDK失败:', error);
+      throw error;
+    }
   }
 
   // 注册事件监听

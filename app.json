@@ -2,13 +2,31 @@
   "pages": [
     "pages/index/index",
     "pages/message/message",
-    "pages/profile/profile",
-    "pages/chat/chat",
-    "pages/register/register",
-    "pages/userDetail/userDetail",
-    "pages/editProfile/editProfile",
-    "pages/completeInfo/completeInfo"
+    "pages/profile/profile"
   ],
+  "subPackages": [
+    {
+      "root": "pages/chat-package/",
+      "pages": [
+        "chat/chat"
+      ]
+    },
+    {
+      "root": "pages/user-package/",
+      "pages": [
+        "register/register",
+        "userDetail/userDetail",
+        "editProfile/editProfile",
+        "completeInfo/completeInfo"
+      ]
+    }
+  ],
+  "preloadRule": {
+    "pages/message/message": {
+      "network": "all",
+      "packages": ["pages/chat-package"]
+    }
+  },
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#ffffff",

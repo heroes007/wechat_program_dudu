@@ -1,5 +1,4 @@
 import { formatTime } from '../../utils/util'
-import IMManager from '../../utils/im'
 
 Page({
   data: {
@@ -13,8 +12,22 @@ Page({
     app.globalEvent.on('im:messageReceived', this.onMessageReceived.bind(this));
     app.globalEvent.on('im:ready', this.getConversationList.bind(this));
     
-    // 开启下拉刷新
-    // wx.enablePullDownRefresh();  // 这不是有效的API，已在page.json中配置
+    // 初始化IM（如果有待登录的用户）
+    this.initIMIfNeeded();
+  },
+
+  // 在需要时初始化IM
+  async initIMIfNeeded() {
+    const pendingUserID = wx.getStorageSync('pendingIMLogin');
+    if (pendingUserID) {
+      const app = getApp();
+      try {
+        await app.loginIM(pendingUserID);
+        wx.removeStorageSync('pendingIMLogin');
+      } catch (error) {
+        console.error('消息页面IM初始化失败:', error);
+      }
+    }
   },
 
   onPullDownRefresh() {
@@ -45,34 +58,17 @@ Page({
   // 获取会话列表
   async getConversationList() {
     try {
-      // 判断IM是否就绪
-      if (!IMManager.isReady) {
-        console.log('IM SDK未就绪，等待就绪...');
-        
-        // 添加超时等待逻辑
-        let waitTime = 0;
-        const maxWaitTime = 10000; // 最大等待10秒
-        const checkInterval = 500; // 每500ms检查一次
-        
-        return new Promise((resolve) => {
-          const waitInterval = setInterval(() => {
-            waitTime += checkInterval;
-            
-            if (IMManager.isReady) {
-              clearInterval(waitInterval);
-              console.log('IM SDK已就绪，开始获取会话列表');
-              this.getConversationList().then(resolve);
-            } else if (waitTime >= maxWaitTime) {
-              clearInterval(waitInterval);
-              console.error('等待IM SDK就绪超时');
-              wx.showToast({
-                title: '消息同步失败，请重试',
-                icon: 'none'
-              });
-              resolve();
-            }
-          }, checkInterval);
-        });
+      // 获取IM管理器实例
+      const IMManager = require('../../utils/im.js');
+      
+      // 确保IM已初始化
+      if (!IMManager.chat) {
+        await this.initIMIfNeeded();
+        if (!IMManager.chat) {
+          console.log('IM未初始化，显示空状态');
+          this.setData({ messageList: [] });
+          return;
+        }
       }
 
       const { data: { conversationList } } = await IMManager.getConversationList();
@@ -179,7 +175,10 @@ Page({
     const { id } = e.currentTarget.dataset;
     
     // 设置会话已读
-    IMManager.setMessageRead(id);
+    const IMManager = require('../../utils/im.js');
+    if (IMManager.chat) {
+      IMManager.setMessageRead(id);
+    }
     
     // 刷新会话列表
     this.getConversationList();
@@ -189,7 +188,7 @@ Page({
 
     if (conversation) {
       wx.navigateTo({
-        url: `/pages/chat/chat?id=${id}&type=${conversation.type}`
+        url: `/pages/chat-package/chat/chat?id=${id}&type=${conversation.type}`
       });
     }
   },

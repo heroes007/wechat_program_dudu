@@ -44,7 +44,7 @@ export const request = (options) => {
             });
             setTimeout(() => {
               wx.navigateTo({
-                url: '/pages/login/index'
+                url: '/pages/user-package/register/register'
               });
             }, 1500);
             reject(res.data);

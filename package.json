@@ -1,8 +1,6 @@
 {
   "dependencies": {
     "@tencentcloud/chat": "^3.5.5",
-    "@tencentcloud/chat-uikit-wechat": "^2.4.4",
-    "tim-upload-plugin": "^1.4.2",
-    "tim-wx-sdk": "^2.27.6"
+    "tim-upload-plugin": "^1.4.2"
   }
 }

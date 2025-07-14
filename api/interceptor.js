@@ -53,7 +53,7 @@ export const handleErrorCode = (code, message) => {
       });
       setTimeout(() => {
         wx.navigateTo({
-          url: '/pages/login/index'
+          url: '/pages/user-package/register/register'
         });
       }, 1500);
     },

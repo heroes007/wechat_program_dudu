@@ -1,7 +1,5 @@
 // app.js
 import { initApiService, UserApi } from './api/index';
-// 引入IM工具类
-import IMManager from './utils/im';
 
 // 简单的事件总线
 class EventEmitter {
@@ -59,8 +57,8 @@ App({
     const logs = wx.getStorageSync('logs') || []
     logs.unshift(Date.now())
     wx.setStorageSync('logs', logs)
-    // 初始化腾讯云IM SDK
-    this.initIM();
+    // IM SDK将在需要时才初始化（分包加载时）
+    // this.initIM();
 
     // 登录状态检查
     const token = wx.getStorageSync('token')
@@ -74,15 +72,27 @@ App({
     this.initAIModel();
   },
 
-  // 初始化IM
+  // 初始化IM（延迟到分包加载时）
   initIM() {
-    // 设置SDKAppID
-    IMManager.SDKAppID = this.globalData.SDKAppID;
-    // 初始化IM SDK
-    IMManager.init();
-    
-    // 监听IM事件
-    this.listenIMEvents();
+    return new Promise((resolve, reject) => {
+      try {
+        // 动态引入IM管理器（避免在主包中加载）
+        const IMManager = require('./utils/im.js');
+        
+        // 设置SDKAppID
+        IMManager.SDKAppID = this.globalData.SDKAppID;
+        // 初始化IM SDK
+        IMManager.init();
+        
+        // 监听IM事件
+        this.listenIMEvents(IMManager);
+        
+        resolve(IMManager);
+      } catch (error) {
+        console.error('IM初始化失败:', error);
+        reject(error);
+      }
+    });
   },
 
 
@@ -94,22 +104,26 @@ App({
   },
   
   // 监听IM事件
-  listenIMEvents() {
-    // 监听IM就绪事件
-    this.globalEvent.on('im:ready', () => {
+  listenIMEvents(IMManager) {
+    if (!IMManager) return;
+    
+    // 直接监听IM管理器的事件
+    IMManager.on('ready', () => {
       console.log('IM已就绪');
-      // 可以在这里执行一些IM就绪后的操作
+      this.globalEvent.emit('im:ready');
     });
     
-    // 监听消息接收事件
-    this.globalEvent.on('im:messageReceived', (messages) => {
+    IMManager.on('messageReceived', (messages) => {
       console.log('收到新消息', messages);
-      // 可以在这里处理新消息，例如更新未读消息数等
+      this.globalEvent.emit('im:messageReceived', messages);
     });
   },
 
   // IM登录
-  imLogin(userID, userSig) {
+  imLogin(userID, userSig, IMManager) {
+    if (!IMManager) {
+      throw new Error('IM管理器未初始化');
+    }
     return IMManager.login(userID, userSig);
   },
 
@@ -119,45 +133,41 @@ App({
     const userInfo = res.user;
     wx.setStorageSync('userInfo', userInfo)
     
-    // 用户信息获取成功后，尝试登录IM
+    // 用户信息获取成功后，尝试登录IM（只在需要时）
     if (userInfo && userInfo.userID) {
-      this.loginIM(userInfo.userID);
+      // 延迟到用户访问聊天功能时才登录IM
+      wx.setStorageSync('pendingIMLogin', userInfo.userID);
     }
 
     return userInfo;
   },
   
-  // 登录IM系统
-  loginIM(userID) {
-    // 这里应该从服务器获取userSig，这里使用简化方式
-    // 实际开发中，应从服务器获取userSig
-    const genTestUserSig = require('./TUIKit/debug/GenerateTestUserSig');
-    
-    const config = {
-      userID: userID,
-      SDKAPPID: this.globalData.SDKAppID,
-      SECRETKEY: 'ccbe2a7880675d333a4ae8902fac40d171b7253cbad72fecf0e5ff58194a5ab3', // 使用im.js中的密钥
-      EXPIRETIME: 604800
-    };
-    
+  // 登录IM系统（延迟到分包加载时）
+  async loginIM(userID) {
     try {
+      // 初始化IM SDK
+      const IMManager = await this.initIM();
+      
+      // 这里应该从服务器获取userSig，这里使用简化方式
+      // 实际开发中，应从服务器获取userSig
+      const genTestUserSig = require('./pages/chat-package/TUIKit/debug/GenerateTestUserSig');
+      
+      const config = {
+        userID: userID,
+        SDKAPPID: this.globalData.SDKAppID,
+        SECRETKEY: 'ccbe2a7880675d333a4ae8902fac40d171b7253cbad72fecf0e5ff58194a5ab3',
+        EXPIRETIME: 604800
+      };
+      
       const { userSig } = genTestUserSig.genTestUserSig(config);
       
       // 登录IM
-      this.imLogin(userID, userSig).then(() => {
-        console.log('IM登录成功');
-      }).catch(err => {
-        console.error('IM登录失败', err);
-        // 可以添加重试或提示用户
-        wx.showToast({
-          title: 'IM登录失败',
-          icon: 'none'
-        });
-      });
+      await this.imLogin(userID, userSig, IMManager);
+      console.log('IM登录成功');
     } catch (error) {
-      console.error('生成UserSig失败', error);
+      console.error('IM登录失败', error);
       wx.showToast({
-        title: '生成UserSig失败',
+        title: 'IM登录失败',
         icon: 'none'
       });
     }

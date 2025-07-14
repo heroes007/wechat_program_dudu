@@ -126,7 +126,7 @@ Page({
     this.handleSwipe('right')
     // 跳转至聊天页面
     wx.navigateTo({
-      url: `/pages/chat/chat?id=${this.data.recommendUsers[this.data.currentIndex].id}`
+      url: `/pages/chat-package/chat/chat?id=${this.data.recommendUsers[this.data.currentIndex].id}`
     })
   },
 
@@ -173,7 +173,7 @@ Page({
     const { currentIndex, recommendUsers } = this.data
     const userId = recommendUsers[currentIndex].id
     wx.navigateTo({
-      url: `/pages/userDetail/userDetail?id=${userId}`
+      url: `/pages/user-package/userDetail/userDetail?id=${userId}`
     })
   }
 }) 

@@ -47,7 +47,7 @@ Page({
   handleLogin() {
     // 这里应该跳转到登录页面
     wx.navigateTo({
-      url: '/pages/register/register'
+      url: '/pages/user-package/register/register'
     })
   },
 
@@ -82,7 +82,7 @@ Page({
   // 编辑资料
   goToEditProfile() {
     wx.navigateTo({
-      url: '/pages/editProfile/editProfile'
+      url: '/pages/user-package/editProfile/editProfile'
     })
   },
 
