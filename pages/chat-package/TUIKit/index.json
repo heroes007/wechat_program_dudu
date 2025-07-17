@@ -3,5 +3,10 @@
   "usingComponents": {
     "TUIConversation": "./components/TUIConversation/index",
     "TUIChat": "./components/TUIChat/index"
-  }
+  },
+  "componentPlaceholder": {
+    "TUIConversation": "view",
+    "TUIChat": "view"
+  },
+  "lazyCodeLoading": "requiredComponents"
 }

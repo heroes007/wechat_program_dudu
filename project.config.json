@@ -26,10 +26,11 @@
     "checkSiteMap": true,
     "uploadWithSourceMap": true,
     "compileHotReLoad": false,
-    "lazyloadPlaceholderEnable": false,
+    "lazyloadPlaceholderEnable": true,
     "useMultiFrameRuntime": true,
     "useApiHook": true,
     "useApiHostProcess": true,
+    "lazyCodeLoading": "requiredComponents",
     "babelSetting": {
       "ignore": [],
       "disablePlugins": [],
@@ -47,9 +48,10 @@
     "useCompilerPlugins": [
       "typescript"
     ],
-    "ignoreUploadUnusedFiles": true
+    "ignoreUploadUnusedFiles": true,
+    "bundle": true
   },
-  "appid": "wxfced909c6c3c733f",
+  "appid": "wxc98c850ec9833c4d",
   "condition": {},
   "editorSetting": {
     "tabIndent": "insertSpaces",

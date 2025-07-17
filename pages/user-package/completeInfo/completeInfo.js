@@ -95,7 +95,7 @@ Page({
     let completeSign = 0
     tempFiles.forEach(item => {
         wx.uploadFile({
-            url: 'http://60.205.120.120:8090/dudu/system/file/upload',
+            url: 'https://dududate.com/api/dudu/system/file/upload',
             filePath: item.tempFilePath,
             name: 'file',
             header: {

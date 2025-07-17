@@ -4,10 +4,33 @@
       <image class="logo" src="/assets/images/logo.png" mode="aspectFit"></image>
       <text class="title">嘟嘟</text>
     </view>
-    <text class="subtitle">用手机号注册/登录</text>
+    <text class="subtitle" wx:if="{{loginMode === 'choice'}}">选择登录方式</text>
+    <text class="subtitle" wx:else>用手机号注册/登录</text>
   </view>
   
-  <view class="form-container">
+  <!-- 登录方式选择 -->
+  <view class="login-choice-container" wx:if="{{loginMode === 'choice'}}">
+    <button class="login-btn wechat-btn" 
+            open-type="getPhoneNumber" 
+            bindgetphonenumber="getWechatPhoneNumber">
+      <view class="btn-content">
+        <text class="btn-text">微信登录</text>
+      </view>
+    </button>
+    
+    <button class="login-btn phone-btn" bindtap="choosePhoneLogin">
+      <view class="btn-content">
+        <text class="btn-text">手机号登录</text>
+      </view>
+    </button>
+  </view>
+  
+  <!-- 手机号登录 -->
+  <view class="form-container" wx:if="{{loginMode === 'phone'}}">
+    <view class="back-btn" bindtap="backToChoice">
+      <text>← 返回选择登录方式</text>
+    </view>
+    
     <view class="input-group">
       <text class="label">手机号</text>
       <view class="input-container">
@@ -40,11 +63,12 @@
       {{step === 'phone' ? '下一步' : '登录'}}
     </button>
     
-    <view class="tips">
-      <text>注册/登录即代表您同意</text>
-      <text class="link" bindtap="goToAgreement">《用户协议》</text>
-      <text>和</text>
-      <text class="link" bindtap="goToPrivacy">《隐私政策》</text>
-    </view>
+  <!-- 用户协议 -->
+  <view class="tips" wx:if="{{loginMode !== 'choice'}}">
+    <text>注册/登录即代表您同意</text>
+    <text class="link" bindtap="goToAgreement">《用户协议》</text>
+    <text>和</text>
+    <text class="link" bindtap="goToPrivacy">《隐私政策》</text>
+  </view>
   </view>
 </view> 

@@ -2,5 +2,6 @@
   "navigationBarTitleText": "个人资料",
   "navigationBarBackgroundColor": "#ff6b81",
   "navigationBarTextStyle": "white",
-  "usingComponents": {}
+  "usingComponents": {},
+  "lazyCodeLoading": "requiredComponents"
 } 

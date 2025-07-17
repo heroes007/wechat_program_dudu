@@ -19,6 +19,10 @@ export const UserApi = {
       'Content-Type': 'multipart/form-data'
     }
   }),
+  // 微信登录
+  wechatLogin: (data) => http.post('/dudu/wechatLogin', data),
+  // 发送短信验证码
+  sendSmsCode: (data) => http.post('/dudu/sendSmsCode', data),
 }
 
 // 内容相关接口

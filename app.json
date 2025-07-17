@@ -25,6 +25,10 @@
     "pages/message/message": {
       "network": "all",
       "packages": ["pages/chat-package"]
+    },
+    "pages/index/index": {
+      "network": "wifi",
+      "packages": ["pages/user-package"]
     }
   },
   "window": {
@@ -65,5 +69,9 @@
     }
   },
   "usingComponents": {},
+  "lazyCodeLoading": "requiredComponents",
+  "useExtendedLib": {
+    "weui": true
+  },
   "sitemapLocation": "sitemap.json"
 } 

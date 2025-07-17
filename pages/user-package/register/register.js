@@ -2,6 +2,7 @@ import { UserApi } from '../../../api/apis'
 
 Page({
   data: {
+    loginMode: 'choice', // 'choice' | 'phone'
     step: 'phone', // 'phone' or 'verify'
     phone: '',
     code: '',
@@ -13,6 +14,88 @@ Page({
 
   onLoad() {
     // 页面加载
+  },
+
+  // 选择手机号登录
+  choosePhoneLogin() {
+    this.setData({
+      loginMode: 'phone'
+    })
+  },
+
+  // 返回登录方式选择
+  backToChoice() {
+    this.setData({
+      loginMode: 'choice',
+      step: 'phone',
+      phone: '',
+      code: '',
+      canSubmit: false,
+      codeSent: false,
+      countdown: 60,
+      verifyText: '获取验证码'
+    })
+  },
+
+  // 微信登录 - 获取手机号
+  getWechatPhoneNumber(e) {
+    console.log('微信授权结果:', e.detail)
+    
+    if (e.detail.errMsg === 'getPhoneNumber:ok') {
+      // 获取到手机号授权，微信返回加密数据
+      wx.showLoading({
+        title: '登录中'
+      })
+
+      // 使用微信登录接口，传递加密数据到后端进行解密
+      UserApi.wechatLogin({
+        code: e.detail.code,
+        encryptedData: e.detail.encryptedData,
+        iv: e.detail.iv
+      }).then(res => {
+        wx.hideLoading()
+        
+        // 登录成功，保存token
+        wx.setStorageSync('token', res.data.token)
+        
+        wx.showToast({
+          title: '登录成功',
+          icon: 'success',
+          success: () => {
+            // 获取用户信息并设置全局状态
+            const app = getApp()
+            app.getUserInfo().then(userInfo => {
+              console.log('userInfo', userInfo)
+
+              // 延迟返回，确保toast能显示
+              setTimeout(() => {
+                if (!userInfo.avatar) {
+                  wx.navigateTo({
+                    url: '/pages/user-package/completeInfo/completeInfo'
+                  })
+                } else {
+                  wx.switchTab({
+                    url: '/pages/index/index'
+                  })
+                }
+              }, 1500)
+            })
+          }
+        })
+      }).catch(err => {
+        wx.hideLoading()
+        wx.showToast({
+          title: err.message || '登录失败，请重试',
+          icon: 'none'
+        })
+      })
+    } else {
+      // 用户拒绝授权
+      wx.showToast({
+        title: '需要授权手机号才能登录',
+        icon: 'none'
+      })
+    }
   },
 
   // 处理手机号输入
@@ -57,8 +140,10 @@ Page({
       title: '发送中'
     })
     
-    // 模拟API请求发送验证码
-    setTimeout(() => {
+    // 调用发送验证码API
+    UserApi.sendSmsCode({
+      phonenumber: phone
+    }).then(res => {
       wx.hideLoading()
       
       // 发送成功，开始倒计时
@@ -73,7 +158,13 @@ Page({
         title: '验证码已发送',
         icon: 'success'
       })
-    }, 1000)
+    }).catch(err => {
+      wx.hideLoading()
+      wx.showToast({
+        title: err.message || '发送失败，请重试',
+        icon: 'none'
+      })
+    })
   },
   
   // 开始倒计时
@@ -150,6 +241,12 @@ Page({
               }, 1500)
             })
           }
+        })
+      }).catch(err => {
+        wx.hideLoading()
+        wx.showToast({
+          title: err.message || '登录失败，请重试',
+          icon: 'none'
         })
       })
     }

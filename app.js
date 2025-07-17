@@ -43,7 +43,8 @@ App({
   onLaunch() {
     // 初始化API服务
     initApiService({
-      baseUrl: 'http://60.205.120.120:8090', // 实际开发中替换为真实的API地址
+      // baseUrl: 'http://60.205.120.120:8090', // 实际开发中替换为真实的API地址
+      baseUrl: 'https://dududate.com/api',
       enableMock: false,  // 开发阶段启用模拟数据
       enableInterceptor: true
     });
@@ -67,6 +68,13 @@ App({
       this.globalData.isLogin = true
       // 获取用户信息
       this.getUserInfo()
+    } else {
+      // 未登录，跳转到注册页面
+      setTimeout(() => {
+        wx.redirectTo({
+          url: '/pages/user-package/register/register'
+        })
+      }, 100)
     }
 
     this.initAIModel();

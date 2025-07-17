@@ -1,5 +1,7 @@
 {
   "navigationBarTitleText": "消息",
   "enablePullDownRefresh": true,
-  "backgroundTextStyle": "dark"
+  "backgroundTextStyle": "dark",
+  "usingComponents": {},
+  "lazyCodeLoading": "requiredComponents"
 } 

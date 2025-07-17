@@ -1,6 +1,7 @@
 {
   "usingComponents": {
-    "TUIKit": "../TUIKit/index"
+    "chat-guide": "../../../components/chatGuide/chatGuide"
   },
-  "navigationBarTitleText": "聊天"
+  "navigationBarTitleText": "聊天",
+  "lazyCodeLoading": "requiredComponents"
 }
