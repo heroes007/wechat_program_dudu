@@ -47,47 +47,63 @@ Page({
         title: '登录中'
       })
 
-      // 使用微信登录接口，传递加密数据到后端进行解密
-      UserApi.wechatLogin({
-        code: e.detail.code,
-        encryptedData: e.detail.encryptedData,
-        iv: e.detail.iv
-      }).then(res => {
-        wx.hideLoading()
-        
-        // 登录成功，保存token
-        wx.setStorageSync('token', res.data.token)
-        
-        wx.showToast({
-          title: '登录成功',
-          icon: 'success',
-          success: () => {
-            // 获取用户信息并设置全局状态
-            const app = getApp()
-            app.getUserInfo().then(userInfo => {
-              console.log('userInfo', userInfo)
+      wx.login({
+        timeout: '',
+        success: (loginRes) => {
+          console.log('wx.login success:', loginRes)
+          
+          // 使用微信登录接口，传递code和加密数据到后端进行解密
+          UserApi.wechatLogin({
+            code: e.detail.code,
+            encryptedData: e.detail.encryptedData,
+            iv: e.detail.iv,
+            js_code: loginRes.code // 将wx.login获取到的code作为js_code传递
+          }).then(res => {
+            wx.hideLoading()
+            
+            // 登录成功，保存token
+            wx.setStorageSync('token', res.data.token)
+            
+            wx.showToast({
+              title: '登录成功',
+              icon: 'success',
+              success: () => {
+                // 获取用户信息并设置全局状态
+                const app = getApp()
+                app.getUserInfo().then(userInfo => {
+                  console.log('userInfo', userInfo)
 
-              // 延迟返回，确保toast能显示
-              setTimeout(() => {
-                if (!userInfo.avatar) {
-                  wx.navigateTo({
-                    url: '/pages/user-package/completeInfo/completeInfo'
-                  })
-                } else {
-                  wx.switchTab({
-                    url: '/pages/index/index'
-                  })
-                }
-              }, 1500)
+                  // 延迟返回，确保toast能显示
+                  setTimeout(() => {
+                    if (!userInfo.avatar) {
+                      wx.navigateTo({
+                        url: '/pages/user-package/completeInfo/completeInfo'
+                      })
+                    } else {
+                      wx.switchTab({
+                        url: '/pages/index/index'
+                      })
+                    }
+                  }, 1500)
+                })
+              }
             })
-          }
-        })
-      }).catch(err => {
-        wx.hideLoading()
-        wx.showToast({
-          title: err.message || '登录失败，请重试',
-          icon: 'none'
-        })
+          }).catch(err => {
+            wx.hideLoading()
+            wx.showToast({
+              title: err.message || '登录失败，请重试',
+              icon: 'none'
+            })
+          })
+        },
+        fail: (err) => {
+          console.log('wx.login fail:', err)
+          wx.hideLoading()
+          wx.showToast({
+            title: '微信登录失败，请重试',
+            icon: 'none'
+          })
+        }
       })
     } else {
       // 用户拒绝授权

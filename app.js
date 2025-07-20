@@ -43,7 +43,6 @@ App({
   onLaunch() {
     // 初始化API服务
     initApiService({
-      // baseUrl: 'http://60.205.120.120:8090', // 实际开发中替换为真实的API地址
       baseUrl: 'https://dududate.com/api',
       enableMock: false,  // 开发阶段启用模拟数据
       enableInterceptor: true
@@ -107,7 +106,7 @@ App({
   // 初始化AI模型
   initAIModel() {
     wx.cloud.init({
-      env: "cloud1-1gzx3mxd3248aafb",
+      env: "cloud1-3gzkrcde229e333a",
     });
   },
   

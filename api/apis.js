@@ -20,7 +20,7 @@ export const UserApi = {
     }
   }),
   // 微信登录
-  wechatLogin: (data) => http.post('/dudu/wechatLogin', data),
+  wechatLogin: (data) => http.post('/dudu/check', data),
   // 发送短信验证码
   sendSmsCode: (data) => http.post('/dudu/sendSmsCode', data),
 }
