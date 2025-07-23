@@ -3,7 +3,7 @@
   "projectname": "dudu-social",
   "setting": {
     "compileHotReLoad": false,
-    "urlCheck": true,
+    "urlCheck": false,
     "lazyloadPlaceholderEnable": true,
     "useIsolateContext": true
   },

@@ -1,5 +1,7 @@
 // 基础请求封装
 const BASE_URL = 'https://dududate.com/api';
+// const BASE_URL = 'http://119.45.26.166:8090';
+
 // const BASE_URL = 'http://60.205.120.120:8090';
 // 可以在此处配置你的实际API地址
 

@@ -44,6 +44,7 @@ App({
     // 初始化API服务
     initApiService({
       baseUrl: 'https://dududate.com/api',
+      // baseUrl: 'http://119.45.26.166:8090',
       enableMock: false,  // 开发阶段启用模拟数据
       enableInterceptor: true
     });
