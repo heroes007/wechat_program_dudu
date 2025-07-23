@@ -8,5 +8,17 @@
     "useIsolateContext": true
   },
   "libVersion": "3.8.9",
-  "condition": {}
+  "condition": {
+    "miniprogram": {
+      "list": [
+        {
+          "name": "pages/user-package/completeInfo/completeInfo",
+          "pathName": "pages/user-package/completeInfo/completeInfo",
+          "query": "",
+          "scene": null,
+          "launchMode": "default"
+        }
+      ]
+    }
+  }
 }

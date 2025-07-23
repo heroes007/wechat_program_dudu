@@ -1,10 +1,13 @@
 <view class="complete-info-container">
   <!-- 步骤指示器 -->
   <view class="step-indicator">
-    <view class="step-progress">
-      <view class="progress-bar" style="width: {{(step / totalStep) * 100}}%;"></view>
+    <view class="step-circles">
+      <view class="step-circle {{index + 1 <= step ? 'active' : ''}}" 
+            wx:for="{{[1,2,3,4,5]}}" 
+            wx:key="index">
+        {{index + 1}}
+      </view>
     </view>
-    <view class="step-text">{{step}}/{{totalStep}}</view>
   </view>
 
   <!-- 昵称设置页面 -->
@@ -36,18 +39,20 @@
     </view>
     
     <view class="gender-options">
-      <view class="gender-option {{gender === 'male' ? 'selected' : ''}}" 
+      <view class="gender-option" 
+            hover-class="none"
             bind:tap="selectGender" 
             data-gender="male">
-        <view class="gender-icon male-icon">♂</view>
-        <view class="gender-text">男生</view>
+        <view class="gender-icon male-icon {{gender === 'male' ? 'selected-male' : ''}}">♂</view>
+        <view class="gender-text {{gender === 'male' ? 'selected-male-text' : ''}}">我是男生</view>
       </view>
       
-      <view class="gender-option {{gender === 'female' ? 'selected' : ''}}" 
+      <view class="gender-option" 
+            hover-class="none"
             bind:tap="selectGender" 
             data-gender="female">
-        <view class="gender-icon female-icon">♀</view>
-        <view class="gender-text">女生</view>
+        <view class="gender-icon female-icon {{gender === 'female' ? 'selected-female' : ''}}">♀</view>
+        <view class="gender-text {{gender === 'female' ? 'selected-female-text' : ''}}">我是女生</view>
       </view>
     </view>
   </view>
@@ -69,34 +74,42 @@
         <view class="photo-delete" bind:tap="deleteImage" data-index="{{index}}">×</view>
       </view>
       
-      <view class="photo-add" 
-            wx:if="{{avatarList.length < maxPhotos}}" 
-            bind:tap="chooseImage">
-        <view class="add-icon">+</view>
-        <view class="add-text">添加照片</view>
+      <view class="photo-add-container">
+          <view class="photo-add" 
+              bind:tap="chooseImage">
+          <image src="/assets/icons/register-add.svg" alt="" class="add-icon"></image>
+        </view>
+          <view class="add-text">封面照</view>
       </view>
-    </view>
-    
-    <view class="photo-tip">
-      已上传 {{avatarList.length}}/{{maxPhotos}} 张照片
+      <view class="photo-add-container">
+          <view class="photo-add"
+              wx:if="{{avatarList.length > 0}}" 
+              wx:if="{{avatarList.length < maxPhotos}}" 
+              bind:tap="chooseImage">
+          <image src="/assets/icons/register-add.svg" alt="" class="add-icon"></image>
+        </view>
+          <view class="add-text">生活照</view>
+      </view>
     </view>
   </view>
 
   <!-- 地点选择页面 -->
   <view class="step-content" wx:if="{{step === 4}}">
     <view class="step-header">
-      <view class="step-title">上海静安</view>
-      <view class="step-subtitle">系统将为你推荐同城的朋友</view>
+      <view class="step-title">你从哪里来，我的朋友～</view>
+      <view class="step-subtitle">选择你所在的城市</view>
     </view>
     
-    <view class="location-grid">
-      <view class="location-item {{selectedLocation === item ? 'selected' : ''}}" 
-            wx:for="{{locationList}}" 
-            wx:key="index"
-            bind:tap="selectLocation" 
-            data-location="{{item}}">
-        {{item}}
-      </view>
+    <view class="location-section">
+      <picker 
+        mode="region" 
+        value="{{regionArray}}" 
+        bind:change="onRegionChange"
+        class="region-picker">
+        <view class="location-text">
+          {{selectedLocation || '请选择你的城市'}}
+        </view>
+      </picker>
     </view>
   </view>
 
@@ -107,44 +120,26 @@
       <view class="step-subtitle">我们不会向别人分享你的年龄</view>
     </view>
     
-    <view class="date-picker-container">
-      <view class="date-picker-row">
-        <picker range="{{yearList}}" 
-                value="{{yearList.indexOf(birthYear)}}" 
-                bind:change="onYearChange">
-          <view class="picker-item">
-            {{birthYear || '年份'}}
-          </view>
-        </picker>
-        
-        <picker range="{{monthList}}" 
-                value="{{monthList.indexOf(birthMonth)}}" 
-                bind:change="onMonthChange">
-          <view class="picker-item">
-            {{birthMonth || '月份'}}
-          </view>
-        </picker>
-        
-        <picker range="{{dayList}}" 
-                value="{{dayList.indexOf(birthDay)}}" 
-                bind:change="onDayChange">
-          <view class="picker-item">
-            {{birthDay || '日期'}}
-          </view>
-        </picker>
-      </view>
-      
-      <view class="date-display" wx:if="{{birthYear && birthMonth && birthDay}}">
-        你的生日：{{birthYear}} {{birthMonth}} {{birthDay}}
-      </view>
+    <view class="date-section">
+      <picker 
+        mode="date" 
+        value="{{selectedDate}}" 
+        bind:change="onDateChange"
+        class="date-picker">
+        <view class="location-text">
+          {{selectedBirthDisplay || '请选择你的生日'}}
+        </view>
+      </picker>
     </view>
   </view>
 
   <!-- 底部按钮 -->
   <view class="bottom-actions">
     <view class="action-buttons">
-      <button class="btn-skip" bind:tap="skipStep">跳过</button>
-      <button class="btn-next" bind:tap="nextStep">
+      <!-- <button class="btn-skip" bind:tap="skipStep">跳过</button> -->
+      <button class="btn-next {{isNextButtonDisabled ? 'disabled' : ''}}" 
+              disabled="{{isNextButtonDisabled}}"
+              bind:tap="nextStep">
         {{step === totalStep ? '完成' : '下一步'}}
       </button>
     </view>

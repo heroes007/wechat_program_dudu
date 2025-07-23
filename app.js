@@ -63,18 +63,18 @@ App({
     // 登录状态检查
     const token = wx.getStorageSync('token')
     console.log('token', token)
-    if (token) {
-      this.globalData.isLogin = true
-      // 获取用户信息
-      this.getUserInfo()
-    } else {
-      // 未登录，跳转到注册页面
-      setTimeout(() => {
-        wx.redirectTo({
-          url: '/pages/user-package/register/register'
-        })
-      }, 100)
-    }
+    // if (token) {
+    //   this.globalData.isLogin = true
+    //   // 获取用户信息
+    //   this.getUserInfo()
+    // } else {
+    //   // 未登录，跳转到注册页面
+    //   setTimeout(() => {
+    //     wx.redirectTo({
+    //       url: '/pages/user-package/register/register'
+    //     })
+    //   }, 100)
+    // }
 
     this.initAIModel();
   },

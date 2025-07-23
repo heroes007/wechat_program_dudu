@@ -2,7 +2,7 @@ import { UserApi } from '../../../api/apis'
 
 Page({
   data: {
-    step: 1, // 当前步骤 1:昵称 2:性别 3:照片 4:地点 5:年龄
+    step: 5, // 当前步骤 1:昵称 2:性别 3:照片 4:地点 5:年龄
     totalStep: 5,
     
     // 昵称相关
@@ -17,51 +17,65 @@ Page({
     
     // 地点相关
     selectedLocation: '',
-    locationList: ['北京', '上海', '广州', '深圳', '杭州', '南京', '成都', '重庆', '西安', '武汉', '苏州', '天津'],
+    regionArray: ['请选择', '请选择', '请选择'], // 省市区数组
     
     // 年龄相关
-    birthYear: '',
-    birthMonth: '',
-    birthDay: '',
-    yearList: [],
-    monthList: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
-    dayList: []
+    selectedDate: '',
+    selectedBirthDisplay: '',
+    
+    // 按钮状态
+    isNextButtonDisabled: true
   },
 
   onLoad() {
-    this.initYearList()
-    this.initDayList()
+    this.checkNextButtonStatus()
   },
 
-  // 初始化年份列表
-  initYearList() {
-    const currentYear = new Date().getFullYear()
-    const yearList = []
-    for (let i = currentYear - 60; i <= currentYear - 18; i++) {
-      yearList.push(i + '年')
-    }
-    this.setData({ yearList })
-  },
+  // 检查下一步按钮状态
+  checkNextButtonStatus() {
+    const { step, nickName, gender, avatarList, regionArray, selectedDate } = this.data
+    let isDisabled = true
 
-  // 初始化日期列表
-  initDayList() {
-    const dayList = []
-    for (let i = 1; i <= 31; i++) {
-      dayList.push(i + '日')
+    switch (step) {
+      case 1:
+        // 昵称步骤：昵称不为空且长度在1-20之间
+        isDisabled = !nickName || nickName.trim().length === 0 || nickName.trim().length > 20
+        break
+      case 2:
+        // 性别步骤：必须选择性别
+        isDisabled = !gender
+        break
+      case 3:
+        // 照片步骤：至少上传一张照片
+        isDisabled = avatarList.length === 0
+        break
+      case 4:
+        // 地点步骤：必须选择省份和城市
+        isDisabled = regionArray[0] === '请选择' || regionArray[1] === '请选择'
+        break
+      case 5:
+        // 生日步骤：必须选择生日
+        isDisabled = !selectedDate
+        break
     }
-    this.setData({ dayList })
+
+    this.setData({ isNextButtonDisabled: isDisabled })
   },
 
   // 处理昵称输入
   handleNicknameInput(e) {
     const nickName = e.detail.value.trim()
-    this.setData({ nickName })
+    this.setData({ nickName }, () => {
+      this.checkNextButtonStatus()
+    })
   },
 
   // 选择性别
   selectGender(e) {
     const gender = e.currentTarget.dataset.gender
-    this.setData({ gender })
+    this.setData({ gender }, () => {
+      this.checkNextButtonStatus()
+    })
   },
 
   // 选择照片
@@ -106,7 +120,9 @@ Page({
                 if (resData.code === 0 || resData.code === 200) {
                     const avatarList = that.data.avatarList
                     avatarList.push(resData.msg)
-                    that.setData({ avatarList })
+                    that.setData({ avatarList }, () => {
+                      that.checkNextButtonStatus()
+                    })
                     completeSign++
                     if (completeSign === tempFiles.length) {
                         wx.hideLoading()
@@ -133,7 +149,9 @@ Page({
   deleteImage(e) {
     const index = e.currentTarget.dataset.index
     const avatarList = this.data.avatarList.filter((_, i) => i !== index)
-    this.setData({ avatarList })
+    this.setData({ avatarList }, () => {
+      this.checkNextButtonStatus()
+    })
   },
 
   // 预览照片
@@ -147,64 +165,57 @@ Page({
     })
   },
 
-  // 选择地点
-  selectLocation(e) {
-    const location = e.currentTarget.dataset.location
-    this.setData({ selectedLocation: location })
-  },
-
-  // 年份选择
-  onYearChange(e) {
-    const index = e.detail.value
-    this.setData({
-      birthYear: this.data.yearList[index]
-    })
-  },
-
-  // 月份选择
-  onMonthChange(e) {
-    const index = e.detail.value
-    this.setData({
-      birthMonth: this.data.monthList[index]
-    })
-    // 更新日期列表（考虑不同月份的天数）
-    this.updateDayList(index + 1)
-  },
-
-  // 日期选择
-  onDayChange(e) {
-    const index = e.detail.value
-    this.setData({
-      birthDay: this.data.dayList[index]
-    })
-  },
-
-  // 更新日期列表
-  updateDayList(month) {
-    const year = parseInt(this.data.birthYear)
-    let maxDay = 31
+  // 地区选择器变化
+  onRegionChange(e) {
+    const regionArray = e.detail.value
+    const selectedLocation = regionArray.join(' ')
     
-    if ([4, 6, 9, 11].includes(month)) {
-      maxDay = 30
-    } else if (month === 2) {
-      maxDay = this.isLeapYear(year) ? 29 : 28
-    }
+    // 添加选择反馈
+    wx.vibrateShort({
+      type: 'light'
+    })
     
-    const dayList = []
-    for (let i = 1; i <= maxDay; i++) {
-      dayList.push(i + '日')
-    }
-    this.setData({ dayList })
+    this.setData({
+      regionArray,
+      selectedLocation
+    }, () => {
+      this.checkNextButtonStatus()
+    })
   },
 
-  // 判断是否为闰年
-  isLeapYear(year) {
-    return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0)
+  // 日期选择器变化
+  onDateChange(e) {
+    const selectedDate = e.detail.value
+    const date = new Date(selectedDate)
+    const year = date.getFullYear()
+    const month = date.getMonth() + 1
+    const day = date.getDate()
+    
+    const selectedBirthDisplay = `${year}年${month}月${day}日`
+    
+    // 添加选择反馈
+    wx.vibrateShort({
+      type: 'light'
+    })
+    
+    this.setData({
+      selectedDate,
+      selectedBirthDisplay
+    }, () => {
+      this.checkNextButtonStatus()
+    })
   },
+
+
 
   // 下一步
   nextStep() {
-    const { step, gender, avatarList, selectedLocation, birthYear, birthMonth, birthDay } = this.data
+    // 如果按钮被禁用，直接返回
+    if (this.data.isNextButtonDisabled) {
+      return
+    }
+
+    const { step, gender, avatarList, regionArray, selectedDate } = this.data
     
     // 验证当前步骤的必填项
     if (step === 1 && !this.data.nickName) {
@@ -231,7 +242,7 @@ Page({
       return
     }
     
-    if (step === 4 && !selectedLocation) {
+    if (step === 4 && (regionArray[0] === '请选择' || regionArray[1] === '请选择')) {
       wx.showToast({
         title: '请选择所在地',
         icon: 'none'
@@ -239,7 +250,7 @@ Page({
       return
     }
     
-    if (step === 5 && (!birthYear || !birthMonth || !birthDay)) {
+    if (step === 5 && !selectedDate) {
       wx.showToast({
         title: '请选择出生日期',
         icon: 'none'
@@ -250,6 +261,8 @@ Page({
     if (step < this.data.totalStep) {
       this.setData({
         step: step + 1
+      }, () => {
+        this.checkNextButtonStatus()
       })
     } else {
       // 最后一步，提交数据
@@ -270,11 +283,11 @@ Page({
 
   // 提交信息
   submitInfo() {
-    const { nickName, gender, avatarList, selectedLocation, birthYear, birthMonth, birthDay } = this.data
+    const { nickName, gender, avatarList, selectedLocation, selectedDate } = this.data
     
     wx.showLoading({ title: '提交中...' })
     
-    const birthDate = `${birthYear.replace('年', '')}-${(this.data.monthList.indexOf(birthMonth) + 1).toString().padStart(2, '0')}-${birthDay.replace('日', '').padStart(2, '0')}`
+    const birthDate = selectedDate
     
     const profileData = {
       nickName: nickName,

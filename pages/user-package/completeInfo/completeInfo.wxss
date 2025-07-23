@@ -1,6 +1,6 @@
 .complete-info-container {
   min-height: 100vh;
-  background-color: #f8f9fa;
+  background-color: #fff;
   display: flex;
   flex-direction: column;
   padding: 0 32rpx;
@@ -10,29 +10,33 @@
 .step-indicator {
   padding: 40rpx 0 60rpx;
   display: flex;
+  justify-content: center;
+}
+
+.step-circles {
+  display: flex;
   align-items: center;
-  gap: 24rpx;
+  gap: 40rpx;
 }
 
-.step-progress {
-  flex: 1;
-  height: 8rpx;
-  background-color: #e9ecef;
-  border-radius: 4rpx;
-  overflow: hidden;
-}
-
-.progress-bar {
-  height: 100%;
-  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-  border-radius: 4rpx;
-  transition: width 0.3s ease;
-}
-
-.step-text {
-  font-size: 28rpx;
-  color: #667eea;
+.step-circle {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  background-color: #FFF;
+  color: #CCCCCC;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
   font-weight: 600;
+  transition: all 0.3s ease;
+  border: 1px solid #CCCCCC
+}
+
+.step-circle.active {
+  background: #636EFF;
+  color: #ffffff;
 }
 
 /* 步骤内容 */
@@ -115,14 +119,9 @@
   flex-direction: column;
   align-items: center;
   gap: 24rpx;
-  border: 4rpx solid transparent;
-  transition: all 0.3s ease;
   cursor: pointer;
-}
-
-.gender-option.selected {
-  border-color: #667eea;
-  background-color: #f8f9ff;
+  -webkit-tap-highlight-color: transparent;
+  tap-highlight-color: transparent;
 }
 
 .gender-icon {
@@ -135,26 +134,51 @@
   font-size: 64rpx;
   font-weight: bold;
   color: #ffffff;
+  font-weight: 600;
 }
 
 .male-icon {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: rgba(22, 169, 250, .04);
+  color: #16A9FA;
 }
 
 .female-icon {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  background: rgba(187, 15, 207, .04);
+  color: #FF6A71;
+}
+
+.selected-male {
+  background: #16A9FA;
+  color: #fff;
+}
+
+.selected-female {
+  background: #FF6A71;
+  color: #fff;
 }
 
 .gender-text {
-  font-size: 32rpx;
-  font-weight: 600;
+  font-size: 28rpx;
   color: #212529;
+  color: #000;
+  text-align: center;
+  font-family: "PingFang SC";
+  font-style: normal;
+  font-weight: 400;
+}
+
+.selected-male-text {
+  color: #16A9FA;
+}
+
+.selected-female-text {
+  color: #FF6A71;
 }
 
 /* 照片上传样式 */
 .photo-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 20rpx;
   margin-bottom: 40rpx;
 }
@@ -199,6 +223,26 @@
   justify-content: center;
   gap: 12rpx;
   color: #6c757d;
+  border-radius: 24rpx;
+  border: 1.5rpx solid rgba(140, 123, 253, 0.60);
+  background: rgba(255, 255, 255, 0.10);
+  backdrop-filter: blur(100rpx);
+}
+
+.add-icon {
+  width: 34rpx;
+  height: 34rpx;
+}
+
+.add-text {
+  text-align: center;
+  color: #000;
+  text-align: center;
+  font-family: "PingFang SC";
+  font-size: 28rpx;
+  font-style: normal;
+  font-weight: 400;
+  margin-top: 12rpx;
 }
 
 .add-icon {
@@ -217,61 +261,91 @@
 }
 
 /* 地点选择样式 */
-.location-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20rpx;
-  margin-bottom: 40rpx;
-}
-
-.location-item {
-  background-color: #ffffff;
-  border: 2rpx solid #e9ecef;
-  border-radius: 16rpx;
-  padding: 32rpx 20rpx;
-  text-align: center;
-  font-size: 28rpx;
-  color: #495057;
-  transition: all 0.3s ease;
-}
-
-.location-item.selected {
-  border-color: #667eea;
-  background-color: #f8f9ff;
-  color: #667eea;
-  font-weight: 600;
-}
-
-/* 年龄选择样式 */
-.date-picker-container {
-  padding: 0 40rpx;
-}
-
-.date-picker-row {
-  display: flex;
-  gap: 20rpx;
-  margin-bottom: 60rpx;
-}
-
-.picker-item {
+.location-section {
+  padding: 0 32rpx;
   flex: 1;
-  background-color: #ffffff;
-  border: 2rpx solid #e9ecef;
-  border-radius: 16rpx;
-  padding: 32rpx 20rpx;
-  text-align: center;
-  font-size: 28rpx;
-  color: #495057;
+  display: flex;
+  flex-direction: column;
+  gap: 40rpx;
 }
 
-.date-display {
-  text-align: center;
+.region-picker {
+  display: block;
+}
+
+.location-display {
+  background: linear-gradient(135deg, #f8f9ff 0%, #fff5f5 100%);
+  border-radius: 24rpx;
+  padding: 40rpx 32rpx;
+  border: 1rpx solid rgba(102, 126, 234, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+}
+
+.location-display:active {
+  transform: scale(0.98);
+  border-color: #667eea;
+  box-shadow: 0 4rpx 15rpx rgba(102, 126, 234, 0.1);
+}
+
+.current-location {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+}
+
+.location-icon {
   font-size: 32rpx;
-  color: #667eea;
+  flex-shrink: 0;
+}
+
+.location-text {
+  font-size: 28rpx;
+  color: #212529;
+  line-height: 1.6;
+  border-radius: 8px;
+  background: #F9F9F9;
+  display: flex;
+  width: 100%;
+  padding: 12px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.location-arrow {
+  font-size: 32rpx;
+  color: #8e9aaf;
   font-weight: 600;
-  padding: 40rpx;
-  background-color: #f8f9ff;
+  flex-shrink: 0;
+}
+
+.location-tip {
+  text-align: center;
+  font-size: 26rpx;
+  color: #8e9aaf;
+  line-height: 1.6;
+  padding: 24rpx;
+  background: rgba(142, 154, 175, 0.08);
   border-radius: 16rpx;
+  margin-top: auto;
+  flex-shrink: 0;
+}
+
+
+
+/* 生日选择样式 */
+.date-section {
+  padding: 0 32rpx;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 40rpx;
+}
+
+.date-picker {
+  display: block;
 }
 
 /* 底部按钮样式 */
@@ -299,15 +373,23 @@
 
 .btn-next {
   flex: 1;
-  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(269deg, #646AFF 1.24%, #5E80FF 66.11%, #54A2FF 98.48%);
   color: #ffffff;
   border: none;
-  border-radius: 40rpx;
+  border-radius: 24rpx;
   font-size: 32rpx;
   font-weight: 600;
   height: 88rpx;
   line-height: 88rpx;
   padding: 0;
+  transition: all 0.3s ease;
+}
+
+.btn-next.disabled {
+  color: #fff !important;
+  border-radius: 12px;
+  opacity: 0.3;
+  background: linear-gradient(269deg, #646AFF 1.24%, #5E80FF 66.11%, #54A2FF 98.48%);
 }
 
 .btn-next::after {
@@ -316,4 +398,4 @@
 
 .btn-skip::after {
   border: none;
-} 
+}
